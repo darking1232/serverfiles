@@ -1,0 +1,49 @@
+// Skill Damage Adjustment Database
+//
+// Structure of Database:
+// SkillName,Caster,Map,Damage against Players{,Damage against Mobs{,Damage against Bosses{,Damage against Other}}}
+//
+// Caster: The groups for which the adjustment takes effect. (bitmask)
+//		BL_PC = Player
+//		BL_MOB = Monster
+//		BL_PET = Pet
+//		BL_HOM = Homunculus
+//		BL_MER = Mercenary
+//		BL_ELEM = Elemental
+//
+// Map:
+// 		1    - Normal (the maps that aren't classified as these maps below)
+// 		2    - PVP
+// 		4    - GVG
+// 		8    - Battlegrounds
+// 		16   - 'skill_damage' mapflag
+// Restricted zones - they're configured by 'restricted <number>' mapflag
+// 		32   - Zone 1
+// 		64   - Zone 2
+// 		128  - Zone 3
+// 		256  - Zone 4
+// 		512  - Zone 5
+// 		1024 - Zone 6
+// 		2048 - Zone 7
+//
+// Notes:
+//  	Damage is a percentage between -100 and 100000.
+//  	Negative values decrease damage and positive values increase it (0 = no change).
+//
+// Examples:
+// MC_MAMMONITE,BL_PC,1,50 // In normal maps, players deal +50% damage to other players with Mammonite.
+// MO_EXTREMITYFIST,BL_PC,6,-50 // In PVP and GVG, players deal -50% (half) damage to other players with Asura Strike.
+// AB_ADORAMUS,BL_PC,6,50,0,10,15 // In PVP and GVG, players deal +50% damage to other players, +0% to mobs, +10% to bosses, and +15% to other with Adoramus.
+GS_DESPERADO,BL_PC,4095,40,40,40,40
+GS_RAPIDSHOWER,BL_PC,4095,30,30,30,30
+WZ_STORMGUST,BL_PC,4095,5,5,5,5
+WZ_METEOR,BL_PC,4095,5,5,5,5
+WZ_VERMILION,BL_PC,4095,5,5,5,5
+HT_BLITZBEAT,BL_PC,4095,250,250,250,250
+KN_BOWLINGBASH,BL_PC,4095,15,15,15,15
+NJ_ISSEN,BL_PC,4095,15,15,15,15
+AL_HEAL,BL_PC,4095,100,100,100,100
+CR_ACIDDEMONSTRATION,BL_PC,4095,15,15,15,15
+SN_SHARPSHOOTING,BL_PC,4095,30,30,30,30
+WS_CARTTERMINATION,BL_PC,4095,50,50,50,50
+HT_LANDMINE,BL_PC,4095,200,200,200,200
