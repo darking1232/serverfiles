@@ -1,0 +1,137 @@
+//===== rAthena Script =======================================
+//= Treasure Hunter Quests
+//===== By: ==================================================
+//= Fredzilla
+//===== Current Version: =====================================
+//= 1.0
+//===== Compatible With: =====================================
+//= rAthena Project
+//===== Description: =========================================
+//= Start for Treasure hunter quests
+//===== Additional Comments: =================================
+//= Event_THQS - Used to check if you have already registered
+//= #Treasure_Token - used to keep track of tokens
+//============================================================
+
+yuno_in01,124,164,6	script	Guild Leader	108,{
+	mes "[^0055FF: Bot Checker:^000000]";
+	mes "Before we proceed. I need you to undergo Anti Bot Testing.";
+	mes "Do you still wish to proceed?";
+	if(select("Yes","No")==2){ end; }
+		next;
+		set botternpc, 1;
+		query_sql "SELECT `account_id`,`name` FROM `char` WHERE `name` = '"+(strcharinfo(0))+"'", .@account_id,.@name$;
+		getmapxy( .@mapname$, .@mapx, .@mapy, BL_PC );
+		function GetString;
+		for(set botternpc,botternpc; botternpc < 4; set botternpc,botternpc++){
+			set .@Stringg$,GetString( 15,rand(5,10) );
+			mes "You Have 3 Chance to Type the Red Text Correctly";
+			mes "Attempt Number: " +botternpc;
+			mes "If you failed- You will be jailed";
+			mes "Input the ^FF0000RED COLOUR^000000 part";
+			mes "^0000FF"+GetString( 15,rand(5,10) )+"^FF0000"+.@Stringg$+"^0000FF"+GetString( 15,rand(3,10) )+"^000000";
+			input .@Input$;
+			if( .@Input$ != .@Stringg$ ){
+				if (botternpc >= 3) {
+					sleep2 1000;
+					atcommand "@jailfor 24h "+strcharinfo(0)+"";
+					announce "[Anti-BOT]: The user [" +strcharinfo(0) +"] Has Been Jailed For 24 Hours.",0,0xe80f0f;
+					set botternpc, 0;
+					query_sql "INSERT INTO `a_jail_log` (`account_id`,`name`,`time`,`required_input`,`user_input`,`player_location`,`x`,`y`) VALUES ("+.@account_id+",'"+.@name$+"',NOW(),'"+.@Stringg$+"','"+.@Input$+"','"+.@mapname$+"',"+.@mapx+","+.@mapy+")";
+					end;
+				
+				}
+				mes "Wrong..Please Enter again..";
+				set botternpc, botternpc + 1;
+				next;
+			} else {
+				break;
+			}
+		}
+		function	GetString	{
+			if( getarg(0) & 1 ) setarray .@List$[ getarraysize( .@List$ ) ],"1","2","3","4","5","6","7","8","9";
+			if( getarg(0) & 2 ) setarray .@List$[ getarraysize( .@List$ ) ],"A","B","C","D","E","F","G","H","J","K","L","M","N","P","Q","R","S","T","U","X","Y","Z";
+			if( getarg(0) & 4 ) setarray .@List$[ getarraysize( .@List$ ) ],"a","b","c","d","e","f","g","h","i","j","m","p","q","r","s","t","u","x","y","z";
+			//if( getarg(0) & 8 ) setarray .@List$[ getarraysize( .@List$ ) ],"!","@","#","$","%","^","&","*","(",")","-","=","/","+";
+	
+		set .@Str$,"";
+			while( getstrlen( .@Str$ ) < getarg(1) )
+			set .@Str$,.@Str$ + .@List$[ rand( getarraysize( .@List$ ) ) ];
+			return .@Str$;
+		}
+			next;
+				mes "[^0055FF: Bot Checker:^000000]";
+				mes "Congratulations! You passed the Bot checker. keep it up!";
+			next;
+
+	mes "[Keegan]";
+	mes "What brings you here? Have something to say?";
+	next;
+	menu "I want to be a Treasure Hunter",-,"Take a New Quest.",N_NQuest,"Take me to the Official Shop.",N_OShop,"Never mind.",N_NVM;
+	if(Event_THQS==1) goto N_AlreadyReg;
+	mes "[Keegan]";
+	mes "Well "+strcharinfo(0)+" if you want to be a Treasure Hunter first you must.";
+	mes " ";
+	mes "^FF00001.^000000 You well be changed ^FF0000200,000,000z^000000 for basic training and your proof of being a member.";
+	mes " ";
+	mes "Umm... Well that is all you need to do. Hahaha.";
+	next;
+	menu "Pay ^FF0000200,000,000z^000000.",-,"Thats way to high!!",N_HighPrice;
+	if (Zeny < 200000000) goto N_NoZeny;
+	set Zeny,Zeny-200000000;
+	announce ""+strcharinfo(0)+" has started the Token Quest and on his/her way to Billion dollar lifestyle.",0x33FF66;
+	//getitem 7950, 1;
+	//getitem 7951, 1;
+	set Event_THQS,1;
+	mes "[Keegan]";
+	mes "Congratulations!";
+	emotion ET_CONGRATULATION;
+	next;
+	mes "[Keegan]";
+	mes "Welcome to the Guild of Treasure Hunters.";
+	mes "You may now take a Treasure Hunting Quest as you see fit.";
+	close;
+N_NoZeny:
+	mes "[Keegan]";
+	mes "Hmmm you don't seem to have ^FF0000200,000,000z^000000 "+strcharinfo(0)+". Please come back when you do.";
+	close;
+N_HighPrice:
+	mes "[Keegan]";
+	mes "Well if you can't afford a small ^FF0000200,000,000z^000000 you shouldn't be a Treasure Hunter yet.";
+	close;
+N_AlreadyReg:
+	mes "[Keegan]";
+	mes "Ha ha ha...you are already a member.";
+	close;
+N_NQuest:
+	if (Event_THQS!=1) goto A_NeedReg;
+	mes "[Keegan]";
+	mes "Well "+strcharinfo(0)+" if you wish to take a quest go talk to the fellow Treasure Hunter in the other room there.";
+	close;
+A_NeedReg:
+	mes "[Keegan]";
+	mes "Sorry you must be a member of the Treasure Hunter Guild if you wish to take a quest.";
+	mes " ";
+	mes "Also now that you are a member feel free to use our shops anytime you wish.They are all located on this floor.";
+	mes " ";
+	mes "We also have another shop for members only,in which we use little metal diamonds called Treasure Hunter Tokens to exchange for rare goods.";
+	mes " ";
+	mes "You will even have access to our exclusive personal Dungeon.";
+	close;
+N_OShop:
+	if (Event_THQS!=1) goto N_NeedMem;
+	mes "[Keegan]";
+	mes "Yes "+strcharinfo(0)+" I will take you to our shop right away!";
+	next;
+	warp "prt_in",166,171;
+	close;
+	end;
+N_NeedMem:
+	mes "[Keegan]";
+	mes "I'm sorry only members may visit our private shop.";
+	close;
+N_NVM:
+	mes "[Keegan]";
+	mes "Alright come back when you have the free time to spare.";
+	close;
+}

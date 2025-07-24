@@ -1,0 +1,765 @@
+//===== rAthena Script =======================================
+//= Treasure Hunter Quests
+//===== By: ==================================================
+//= Fredzilla
+//===== Current Version: =====================================
+//= 1.1
+//===== Compatible With: =====================================
+//= rAthena Project
+//===== Description: =========================================
+//= Start for Treasure hunter quests
+//===== Additional Comments: =================================
+//= Event_THQS - Used to check if you have already registered
+//= #Treasure_Token - used to keep track of tokens
+//= 1.0 - Straight conversion of Aegis NPC file
+//= 1.1 - balanced some prices, fixed 1 missing label
+//=       removed Executioner&Mysteltain swords [Lupus]
+//============================================================
+
+prt_in,159,172,0	warp	thqwrp	3,3,yuno_in01,123,155
+
+prt_in,164,174,1	script	Treasure Hunter's Shop	65,{
+	mes "[^0055FF: Bot Checker:^000000]";
+	mes "Before we proceed. I need you to undergo Anti Bot Testing.";
+	mes "Do you still wish to proceed?";
+	if(select("Yes","No")==2){ end; }
+		next;
+		set botternpc, 1;
+		query_sql "SELECT `account_id`,`name` FROM `char` WHERE `name` = '"+(strcharinfo(0))+"'", .@account_id,.@name$;
+		getmapxy( .@mapname$, .@mapx, .@mapy, BL_PC );
+		function GetString;
+		for(set botternpc,botternpc; botternpc < 4; set botternpc,botternpc++){
+			set .@Stringg$,GetString( 15,rand(5,10) );
+			mes "You Have 3 Chance to Type the Red Text Correctly";
+			mes "Attempt Number: " +botternpc;
+			mes "If you failed- You will be jailed";
+			mes "Input the ^FF0000RED COLOUR^000000 part";
+			mes "^0000FF"+GetString( 15,rand(5,10) )+"^FF0000"+.@Stringg$+"^0000FF"+GetString( 15,rand(3,10) )+"^000000";
+			input .@Input$;
+			if( .@Input$ != .@Stringg$ ){
+				if (botternpc >= 3) {
+					sleep2 1000;
+					atcommand "@jailfor 24h "+strcharinfo(0)+"";
+					announce "[Anti-BOT]: The user [" +strcharinfo(0) +"] Has Been Jailed For 24 Hours.",0,0xe80f0f;
+					set botternpc, 0;
+					query_sql "INSERT INTO `a_jail_log` (`account_id`,`name`,`time`,`required_input`,`user_input`,`player_location`,`x`,`y`) VALUES ("+.@account_id+",'"+.@name$+"',NOW(),'"+.@Stringg$+"','"+.@Input$+"','"+.@mapname$+"',"+.@mapx+","+.@mapy+")";
+					end;
+				
+				}
+				mes "Wrong..Please Enter again..";
+				set botternpc, botternpc + 1;
+				next;
+			} else {
+				break;
+			}
+		}
+		function	GetString	{
+			if( getarg(0) & 1 ) setarray .@List$[ getarraysize( .@List$ ) ],"1","2","3","4","5","6","7","8","9";
+			if( getarg(0) & 2 ) setarray .@List$[ getarraysize( .@List$ ) ],"A","B","C","D","E","F","G","H","J","K","L","M","N","P","Q","R","S","T","U","X","Y","Z";
+			if( getarg(0) & 4 ) setarray .@List$[ getarraysize( .@List$ ) ],"a","b","c","d","e","f","g","h","i","j","m","p","q","r","s","t","u","x","y","z";
+			//if( getarg(0) & 8 ) setarray .@List$[ getarraysize( .@List$ ) ],"!","@","#","$","%","^","&","*","(",")","-","=","/","+";
+	
+		set .@Str$,"";
+			while( getstrlen( .@Str$ ) < getarg(1) )
+			set .@Str$,.@Str$ + .@List$[ rand( getarraysize( .@List$ ) ) ];
+			return .@Str$;
+		}
+			next;
+				mes "[^0055FF: Bot Checker:^000000]";
+				mes "Congratulations! You passed the Bot checker. keep it up!";
+			next;
+	mes "[Ash]";
+	mes "Ahh, "+strcharinfo(0)+"! Welcome to the Official Treasure Hunter's Guild Shop.";
+	mes "You currently have ^FF0000"+#Treasure_Token+"^000000 treasure tokens!!!";
+	next;
+	menu "How does this place work?",-,"What do you have in stock?",N_Shop,"Never mind",N_NVM;
+	mes "[Ash]";
+	mes "Well you see here you can exchange your treasure hunter tokens for zeny or rare weapons forged by our blacksmiths.";
+	mes " ";
+	mes "Everything has its own price value and the only way you can get the tokens is by completing quests assigned to you,the system normally works like this.";
+	mes " ";
+	mes "The harder the mission the more Tokens you will earn. All red quests are worth 4-8 Tokens, and the rest are worth 1-5.";
+	mes " ";
+	mes "Hope that solves your problem and questions.";
+	close;
+N_NVM:
+	close;
+	end;
+N_Shop:
+//This is when it gets hard :)
+	mes "[Ash]";
+	mes "Ok here is our Big list of goods.";
+	mes " ";
+	mes "(Note T stands for a Treasure Token.)";
+	next;
+	menu "Trade for Zeny",-,"Trade for Weapons",N_BuyWeps,"Trade for Cards",N_BuyCards,"Trade for Castle Drops",N_CDrops,"Never mind",N_NVM;
+	mes "[Ash]";
+	mes "This is what we have to offer.";
+	next;
+	menu "5,000,000z - 3T",-,"50,000,000z - 25T",N_10T,"500,000,000z - 250T",N_100T,"Never mind",N_NVM;
+	if (#Treasure_Token > 0) goto N_GetZeny1k;
+	mes "You don't have enough tokens!";
+	close;
+N_GetZeny1k:
+	if( Zeny > 994999999){
+		mes "Please convert your zeny first to coins before using my service.";
+		close;
+	}
+	mes "Are you sure you want to trade your Token?";
+	if(select("Yes:No")==2) close;
+	mes "[Ash]";
+	next;
+	mes "Good Choice. There you go!. Enjoy!";
+	set #Treasure_Token,#Treasure_Token-3;
+	set Zeny, Zeny+5000000;
+	close;
+N_10T:
+	if (#Treasure_Token > 24) goto N_GetZeny10k;
+	mes "You don't have enough tokens!";
+	close;
+N_GetZeny10k:
+	if( Zeny > 949999999){
+		mes "Please convert your zeny first to coins before using my service.";
+		close;
+	}
+	mes "Are you sure you want to trade your Token?";
+	if(select("Yes:No")==2) close;
+	next;
+	mes "[Ash]";
+	mes "Good Choice. There you go!. Enjoy!";
+
+	set #Treasure_Token,#Treasure_Token-25;
+	set Zeny, Zeny+50000000;
+	close;
+N_100T:
+	if (#Treasure_Token > 249) goto N_GetZeny100k;
+	mes "You don't have enough tokens!";
+	close;
+N_GetZeny100k:
+	if( Zeny > 499999999){
+		mes "Please convert your zeny first to coins before using my service.";
+		close;
+	}
+	mes "Are you sure you want to trade your Token?";
+	if(select("Yes:No")==2) close;
+	next;
+	mes "[Ash]";
+	mes "Good Choice. There you go!. Enjoy!";
+	set #Treasure_Token,#Treasure_Token-250;
+	set Zeny, Zeny+500000000;
+	close;
+N_BuyWeps:
+	mes "[Ash]";
+	mes "This is what we have to offer.";
+	next;
+	menu "Axe's",-,"1 Handed Swords",N_1HandSword,"2 Handed Swords",N_2HandSword,"Book's",N_Book,"Bow's",N_Bow,"Katar's",N_Katar,"Knuckle's",N_Knuckle,"Mace's",N_Mace,"Whips",N_Whip,"Wands",N_Wand,"Never mind",N_NVM;
+
+	mes "[Ash]";
+	mes "This is what we have to offer.";
+	next;
+	menu "Sabbath - 160T",-,"Slaughter - 160T",N_Slau,"Tomahawk - 180T",N_Toma,"Great Axe - 200T",N_GreatA,"Guillotine - 200T",N_Guill,"Never mind",N_NVM;
+
+	if (#Treasure_Token < 160) goto N_NeedToken;
+	set #Treasure_Token,#Treasure_Token-160;
+	getitem 1365,1;
+	logmes "Treasure Token: Bought a Sabbath";
+	close;
+N_Slau:
+	if (#Treasure_Token < 160) goto N_NeedToken;
+	set #Treasure_Token,#Treasure_Token-160;
+	getitem 1367,1;
+	logmes "Treasure Token: Bought a Slaughter";
+	close;
+N_Toma:
+	if (#Treasure_Token < 180) goto N_NeedToken;
+	set #Treasure_Token,#Treasure_Token-180;
+	getitem 1368,1;
+	logmes "Treasure Token: Bought a Tomahawk";
+	close;
+N_GreatA:
+	if (#Treasure_Token < 200) goto N_NeedToken;
+	set #Treasure_Token,#Treasure_Token-200;
+	getitem 1364,1;
+	logmes "Treasure Token: Bought a Great Axe";
+	close;
+N_Guill:
+	if (#Treasure_Token < 200) goto N_NeedToken;
+	set #Treasure_Token,#Treasure_Token-200;
+	getitem 1369,1;
+	logmes "Treasure Token: Bought a Guillotine";
+	close;
+N_NeedToken:
+	mes "[Ash]";
+	mes "You don't have enough tokens!";
+	close;
+
+
+N_1HandSword:
+	mes "[Ash]";
+	mes "This is what we have to offer.";
+	next;
+	menu "Edge - 130T",-,"Caesar's Sword - 170T",N_CaesarS,"Nagan - 180T",N_Nagan,"Immaterial Sword - 200T",N_ImmatS,"Excalibur - 200T",N_Excal,"Byeollungum - 240T",N_Byeoll,"Talefing - 320T",N_Talef,"Never mind",N_NVM;
+
+	if (#Treasure_Token < 130) goto N_NeedToken;
+	set #Treasure_Token,#Treasure_Token-130;
+	getitem 1132,1;
+	logmes "Treasure Token: Bought a Edge";
+	close;
+N_SolarS:
+	if (#Treasure_Token < 150) goto N_NeedToken;
+	set #Treasure_Token,#Treasure_Token-150;
+	logmes "Treasure Token: Bought a Solar Sword";
+	getitem 1136,1;
+	close;
+N_CaesarS:
+	if (#Treasure_Token < 170) goto N_NeedToken;
+	set #Treasure_Token,#Treasure_Token-170;
+	logmes "Treasure Token: Bought a Caesars Sword";
+	getitem 1134,1;
+	close;
+N_Nagan:
+	if (#Treasure_Token < 180) goto N_NeedToken;
+	set #Treasure_Token,#Treasure_Token-180;
+	logmes "Treasure Token: Bought a Nagan";
+	getitem 1130,1;
+	close;
+N_ImmatS:
+	if (#Treasure_Token < 200) goto N_NeedToken;
+	set #Treasure_Token,#Treasure_Token-200;
+	logmes "Treasure Token: Bought a Immaterial Sword";
+	getitem 1141,1;
+	close;
+N_Excal:
+	if (#Treasure_Token < 200) goto N_NeedToken;
+	set #Treasure_Token,#Treasure_Token-200;
+	logmes "Treasure Token: Bought a Excalibur";
+	getitem 1137,1;
+	close;
+N_Byeoll:
+	if (#Treasure_Token < 240) goto N_NeedToken;
+	set #Treasure_Token,#Treasure_Token-240;
+	logmes "Treasure Token: Bought a Byeollungum";
+	getitem 1140,1;
+	close;
+N_Talef:
+	if (#Treasure_Token < 320) goto N_NeedToken;
+	set #Treasure_Token,#Treasure_Token-320;
+	logmes "Treasure Token: Bought a Talefing";
+	getitem 1139,1;
+	close;
+
+
+N_2HandSword:
+	mes "[Ash]";
+	mes "This is what we have to offer.";
+	next;
+	menu "Dragon Slayer - 140T",-,"Schweizersabel - 200T",N_Schwe,"Muramasa - 300T",N_Murama,"Masamune - 400T",N_Masamu,"Never mind",N_NVM;
+
+	if (#Treasure_Token < 140) goto N_NeedToken;
+	set #Treasure_Token,#Treasure_Token-140;
+	logmes "Treasure Token: Bought a Dragon Slayer";
+	getitem 1166,1;
+	close;
+N_Schwe:
+	if (#Treasure_Token < 200) goto N_NeedToken;
+	set #Treasure_Token,#Treasure_Token-200;
+	logmes "Treasure Token: Bought a Schweizersabel";
+	getitem 1167,1;
+	close;
+N_Katzb:
+	if (#Treasure_Token < 300) goto N_NeedToken;
+	set #Treasure_Token,#Treasure_Token-300;
+	logmes "Treasure Token: Bought a Katzbalger";
+	getitem 1170,1;
+	close;
+N_Murama:
+	if (#Treasure_Token < 300) goto N_NeedToken;
+	set #Treasure_Token,#Treasure_Token-300;
+	logmes "Treasure Token: Bought a Muramasa";
+	getitem 1164,1;
+	close;
+N_Masamu:
+	if (#Treasure_Token < 400) goto N_NeedToken;
+	set #Treasure_Token,#Treasure_Token-400;
+	logmes "Treasure Token: Bought a Masamune";
+	getitem 1165,1;
+	close;
+
+N_Book:
+	mes "[Ash]";
+	mes "This is what we have to offer.";
+	next;
+	menu "Book of the Burning Sun - 80T",-,"Book of the Rough Seas - 80T",N_RoughSea,"Book of the Dry Winds - 80T",N_DryWinds,"Book of the Ripe Earth - 80T",N_RipeEarth,"Book of the Revelations - 80T",N_Revela,"Bible - 90T",N_Bible,"Tablet - 120T",N_Tablet,"Never mind",N_NVM;
+
+	if (#Treasure_Token < 80) goto N_NeedToken;
+	set #Treasure_Token,#Treasure_Token-80;
+	logmes "Treasure Token: Bought a Book of the Burning Sun";
+	getitem 1555,1;
+	close;
+N_RoughSea:
+	if (#Treasure_Token < 80) goto N_NeedToken;
+	set #Treasure_Token,#Treasure_Token-80;
+	logmes "Treasure Token: Bought a Book of the Rough Seas";
+	getitem 1553,1;
+	close;
+N_DryWinds:
+	if (#Treasure_Token < 80) goto N_NeedToken;
+	set #Treasure_Token,#Treasure_Token-80;
+	logmes "Treasure Token: Bought a Book of the Dry Winds";
+	getitem 1556,1;
+	close;
+N_RipeEarth:
+	if (#Treasure_Token < 80) goto N_NeedToken;
+	set #Treasure_Token,#Treasure_Token-80;
+	logmes "Treasure Token: Bought a Book of the Ripe Earth";
+	getitem 1554,1;
+	close;
+N_Revela:
+	if (#Treasure_Token < 80) goto N_NeedToken;
+	set #Treasure_Token,#Treasure_Token-80;
+	logmes "Treasure Token: Bought a Book of the Revelations";
+	getitem 1557,1;
+	close;
+N_Bible:
+	if (#Treasure_Token < 90) goto N_NeedToken;
+	set #Treasure_Token,#Treasure_Token-90;
+	logmes "Treasure Token: Bought a Bible";
+	getitem 1551,1;
+	close;
+N_Tablet:
+	if (#Treasure_Token < 120) goto N_NeedToken;
+	set #Treasure_Token,#Treasure_Token-120;
+	logmes "Treasure Token: Bought a Tablet";
+	getitem 1552,1;
+	close;
+
+N_Bow:
+	mes "[Ash]";
+	mes "This is what we have to offer.";
+	next;
+	menu "Rudra's Bow - 150T",-,"Roguemaster's Bow - 150T",N_Rogue,"Never mind",N_NVM;
+
+	if (#Treasure_Token < 150) goto N_NeedToken;
+	set #Treasure_Token,#Treasure_Token-150;
+	logmes "Treasure Token: Bought a Rudra Bow";
+	getitem 1720,1;
+	close;
+N_Rogue:
+	if (#Treasure_Token < 150) goto N_NeedToken;
+	set #Treasure_Token,#Treasure_Token-150;
+	logmes "Treasure Token: Bought a Roguemaster Bow";
+	getitem 1719,1;
+	close;
+
+N_Katar:
+	mes "[Ash]";
+	mes "This is what we have to offer.";
+	next;
+	menu "Katar of the Blazing Rage - 70T",-,"Katar of the Cold Icicle - 70T",N_ColdIce,"Katar of the Piercing Wind - 70T",N_PiercWind,"Katar of the Dusty Thornbush - 70T",N_DustyT,"Sharpened Legbone of Ghoul - 125T",N_Legbone,"Infiltrator - 150T",N_Infiltra,"Never mind",N_NVM;
+
+	if (#Treasure_Token < 70) goto N_NeedToken;
+	set #Treasure_Token,#Treasure_Token-70;
+	logmes "Treasure Token: Bought a Katar of the Blazing Rage";
+	getitem 1258,1;
+	close;
+N_ColdIce:
+	if (#Treasure_Token < 70) goto N_NeedToken;
+	set #Treasure_Token,#Treasure_Token-70;
+	logmes "Treasure Token: Bought a Katar of the Cold Icicle";
+	getitem 1256,1;
+	close;
+N_PiercWind:
+	if (#Treasure_Token < 70) goto N_NeedToken;
+	set #Treasure_Token,#Treasure_Token-70;
+	logmes "Treasure Token: Bought a Katar of the Piercing Wind";
+	getitem 1259,1;
+	close;
+N_DustyT:
+	if (#Treasure_Token < 70) goto N_NeedToken;
+	set #Treasure_Token,#Treasure_Token-70;
+	logmes "Treasure Token: Bought a Katar of the Dusty Thornbush";
+	getitem 1257,1;
+	close;
+N_Legbone:
+	if (#Treasure_Token < 125) goto N_NeedToken;
+	set #Treasure_Token,#Treasure_Token-125;
+	logmes "Treasure Token: Bought a Sharpened Legbone of Ghoul";
+	getitem 1260,1;
+	close;
+N_Infiltra:
+	if (#Treasure_Token < 150) goto N_NeedToken;
+	set #Treasure_Token,#Treasure_Token-150;
+	logmes "Treasure Token: Bought a Infiltrator";
+	getitem 1261,1;
+	close;
+
+N_Knuckle:
+	mes "[Ash]";
+	mes "This is what we have to offer.";
+	next;
+	menu "Kaiser Knuckle - 75T",-,"Berserk - 75T",N_Berserk,"Never mind",N_NVM;
+
+	if (#Treasure_Token < 75) goto N_NeedToken;
+	set #Treasure_Token,#Treasure_Token-75;
+	logmes "Treasure Token: Bought a Kaiser Knuckle";
+	getitem 1813,1;
+	close;
+N_Berserk:
+	if (#Treasure_Token < 75) goto N_NeedToken;
+	set #Treasure_Token,#Treasure_Token-75;
+	logmes "Treasure Token: Bought a Berserk";
+	getitem 1814,1;
+	close;
+
+N_Mace:
+	mes "[Ash]";
+	mes "This is what we have to offer.";
+	next;
+	menu "Spike - 65T",-,"Slash - 90T",N_Slash,"Grand Cross - 100T",N_GrandC,"Quadrille - 110T",N_Quadr,"Never mind",N_NVM;
+
+	if (#Treasure_Token < 65) goto N_NeedToken;
+	set #Treasure_Token,#Treasure_Token-65;
+	logmes "Treasure Token: Bought a Spike";
+	getitem 1523,1;
+	close;
+N_Slash:
+	if (#Treasure_Token < 90) goto N_NeedToken;
+	set #Treasure_Token,#Treasure_Token-90;
+	logmes "Treasure Token: Bought a Slash";
+	getitem 1526,1;
+	close;
+N_GrandC:
+	if (#Treasure_Token < 100) goto N_NeedToken;
+	set #Treasure_Token,#Treasure_Token-100;
+	logmes "Treasure Token: Bought a Grand Cross";
+	getitem 1528,1;
+	close;
+N_Quadr:
+	if (#Treasure_Token < 110) goto N_NeedToken;
+	set #Treasure_Token,#Treasure_Token-110;
+	logmes "Treasure Token: Bought a Quadrille";
+	getitem 1527,1;
+	close;
+
+N_Whip:
+	mes "[Ash]";
+	mes "This is what we have to offer.";
+	next;
+	menu "Rapture Rose - 50T",-,"Chemeti - 65T",N_Chemeti,"Never mind",N_NVM;
+
+	if (#Treasure_Token < 50) goto N_NeedToken;
+	set #Treasure_Token,#Treasure_Token-50;
+	logmes "Treasure Token: Bought a Rapture Rose";
+	getitem 1963,1;
+	close;
+N_Chemeti:
+	if (#Treasure_Token < 65) goto N_NeedToken;
+	set #Treasure_Token,#Treasure_Token-65;
+	logmes "Treasure Token: Bought a Chemeti";
+	getitem 1964,1;
+	close;
+
+N_Wand:
+	mes "[Ash]";
+	mes "This is what we have to offer.";
+	next;
+	menu "Mighty Staff - 90T",-,"Wizardry Staff - 150T",N_Wizardry,"Bone Wand - 110T",N_BoneW,"Staff of Soul - 120T",N_SOSoul,"Never mind",N_NVM;
+
+	if (#Treasure_Token < 90) goto N_NeedToken;
+	set #Treasure_Token,#Treasure_Token-90;
+	logmes "Treasure Token: Bought a Mighty Staff";
+	getitem 1613,1;//Items: Mighty_Staff,
+	close;
+N_Wizardry:
+	if (#Treasure_Token < 150) goto N_NeedToken;
+	set #Treasure_Token,#Treasure_Token-150;
+	logmes "Treasure Token: Bought a Wizardry Staff";
+	getitem 1473,1;//Items: Wizardy_Staff,
+	close;
+N_BoneW:
+	if (#Treasure_Token < 110) goto N_NeedToken;
+	set #Treasure_Token,#Treasure_Token-110;
+	logmes "Treasure Token: Bought a Bone Wand";
+	getitem 1615,1;//Items: Bone_Wand,
+	close;
+N_SOSoul:
+	if (#Treasure_Token < 120) goto N_NeedToken;
+	set #Treasure_Token,#Treasure_Token-120;
+	logmes "Treasure Token: Bought a Staff of Soul";
+	getitem 1472,1;//Items: Staff_of_Soul,
+	close;
+
+N_BuyCards:
+	mes "[Ash]";
+	mes "This is what we have to offer. All Cards are 300T";
+	next;
+	menu "Hatii  Card - 200T",-,"Stormy Knight Card - 300T",N_CPasana,"Golden Thief Bug Card - 400T",N_CDok,"Ghostring Card - 200T",N_CSFish,
+		"Deviling Card - 200T",N_CSMan,"Dracula Card - 100T",N_CDrain,"Angeling Card - 150T",N_CKaho,"Doppelganger Card - 100T",N_CMand,
+		"Moonlight Flower Card - 100T",N_CVadon,"Turtle General Card - 100T",N_CMummy,"Evil Snake Lord Card - 100T",N_CZeno,"Amon Ra Card - 300T",N_CCond,
+		"Tao Gunka Card - 210T",N_CZomb,"Never mind",N_NVM;
+
+	if (#Treasure_Token < 200) goto N_NeedToken;
+	set #Treasure_Token,#Treasure_Token-200;
+	logmes "Treasure Token: Bought a Hatii Card";
+	getitem 4324,1;//Items: Hatii_Card,
+	close;
+
+N_CPasana:
+	if (#Treasure_Token < 300) goto N_NeedToken;
+	set #Treasure_Token,#Treasure_Token-300;
+	logmes "Treasure Token: Bought a Stormy Knight Card";
+	getitem 4318,1;//Items: Stormy Knight Card,
+	close;
+N_CDok:
+	if (#Treasure_Token < 400) goto N_NeedToken;
+	set #Treasure_Token,#Treasure_Token-400;
+	logmes "Treasure Token: Bought a Golden Thief Bug Card";
+	getitem 4128,1;//Items: Golden Thief Bug Card,
+	close;
+N_CSFish:
+	if (#Treasure_Token < 200) goto N_NeedToken;
+	set #Treasure_Token,#Treasure_Token-200;
+	logmes "Treasure Token: Bought a Ghostring Card";
+	getitem 4047,1;//Items: Ghostring _Card,
+	close;
+N_CSMan:
+	if (#Treasure_Token < 200) goto N_NeedToken;
+	set #Treasure_Token,#Treasure_Token-200;
+	logmes "Treasure Token: Bought a Deviling Card";
+	getitem 4174,1;//Items:Deviling _Card,
+	close;
+N_CDrain:
+	if (#Treasure_Token < 100) goto N_NeedToken;
+	set #Treasure_Token,#Treasure_Token-100;
+	logmes "Treasure Token: Bought a Dracula Card";
+	getitem 4134,1;//Items: Dracula _Card,
+	close;
+N_CKaho:
+	if (#Treasure_Token < 150) goto N_NeedToken;
+	set #Treasure_Token,#Treasure_Token-150;
+	logmes "Treasure Token: Bought a Angeling Card";
+	getitem 4054,1;//Items: Angeling _Card,
+	close;
+N_CMand:
+	if (#Treasure_Token < 100) goto N_NeedToken;
+	set #Treasure_Token,#Treasure_Token-100;
+	logmes "Treasure Token: Bought a Doppelganger Card";
+	getitem 4142,1;//Items: Doppelganger _Card,
+	close;
+N_CVadon:
+	if (#Treasure_Token < 100) goto N_NeedToken;
+	set #Treasure_Token,#Treasure_Token-100;
+	logmes "Treasure Token: Bought a Moonlight Flower Card";
+	getitem 4131,1;//Items: Moonlight Flower _Card,
+	close;
+N_CMummy:
+	if (#Treasure_Token < 100) goto N_NeedToken;
+	set #Treasure_Token,#Treasure_Token-100;
+	logmes "Treasure Token: Bought a Turtle General Card";
+	getitem 4305,1;//Items: Turtle General _Card,
+	close;
+N_CZeno:
+	if (#Treasure_Token < 100) goto N_NeedToken;
+	set #Treasure_Token,#Treasure_Token-100;
+	logmes "Treasure Token: Bought a Evil Snake Lord Card";
+	getitem 4330,1;//Items: Evil Snake Lord _Card,
+	close;
+N_CCond:
+	if (#Treasure_Token < 300) goto N_NeedToken;
+	set #Treasure_Token,#Treasure_Token-300;
+	logmes "Treasure Token: Bought a Amon Ra Card";
+	getitem 4236,1;//Items: Amon Ra _Card,
+	close;
+N_CZomb:
+	if (#Treasure_Token < 210) goto N_NeedToken;
+	set #Treasure_Token,#Treasure_Token-210;
+	logmes "Treasure Token: Bought a Tao GunkaCard";
+	getitem 4302,1;//Items: Tao Gunka_Card,
+	close;
+
+N_CDrops:
+   mes "[Ash]";
+   mes "This is what we have to offer.";
+   next;
+   menu "Freya's Jewel - 300T",-,"Thor's Gauntlet - 300T",D_THORS,"Iron Maiden - 300T",D_IRON,"Wheel of the Unknown - 300T",D_WHEEL,"Silver Ornament - 300T",D_SILVER,"Wrath of Valkyrie - 300T",D_WRATH,"Feather of Angel Wing - 300T",D_FEATHER,"Footprints of Cat - 300T",D_FOOT," Woman's Mustaches - 300T",D_WOMAN,"Root of Stone - 300T",D_ROOT,"Spirit of Fish - 300T",D_SPIRIT,"Sputum of Bird - 300T",D_SPUTUM,"Sinew of Bear - 300T",D_SINEW,"Breath of Soul - 300T",D_BREATH,"Snow Crystal - 300T",D_SNOW,"Omen of Tempest - 300T",D_OMEN,"Ripple - 300T",D_RIPPLE,"Billow - 300T",D_BILLOW,"Drifting Air - 300T",D_DRIFTING,"Emblem of the Sun God - 400T",D_EMBLEM,"Dusk Glow - 400T",D_DUSK,"Dawn Essense - 400T",D_DAWN,"Cold Moonlight - 400T",D_COLD,"Hazy Starlight - 400T",D_HAZY,"Goddes Tears - 400T",D_GODDES,"Valkyrie Token - 400T",D_VALK,"Brynhild Armor Piece - 400T",D_BRYN,"Hero Remains - 400T",D_HERO,"Andvari Ring - 400T",D_ANDVARI,"Nevermind",N_NVM;
+
+   if (#Treasure_Token < 300) goto N_NeedToken;
+   set #Treasure_Token,#Treasure_Token-300;
+   logmes "Treasure Token: Bought a Freya's Jewel";
+   getitem 7073,1;
+   close;
+
+D_THORS:
+   if (#Treasure_Token < 300) goto N_NeedToken;
+   set #Treasure_Token,#Treasure_Token-300;
+   logmes "Treasure Token: Bought a Thor's Gauntlet";
+   getitem 7074,1;
+   close;
+
+D_IRON:
+   if (#Treasure_Token < 300) goto N_NeedToken;
+   set #Treasure_Token,#Treasure_Token-300;
+   logmes "Treasure Token: Bought a Iron Maiden";
+   getitem 7075,1;
+   close;
+
+D_WHEEL:
+   if (#Treasure_Token < 300) goto N_NeedToken;
+   set #Treasure_Token,#Treasure_Token-300;
+   logmes "Treasure Token: Bought a Wheel of the Unknown";
+   getitem 7076,1;
+   close;    
+
+D_SILVER:
+   if (#Treasure_Token < 300) goto N_NeedToken;
+   set #Treasure_Token,#Treasure_Token-300;
+   logmes "Treasure Token: Bought a Silver Ornament";
+   getitem 7077,1;
+   close;
+
+D_WRATH:
+   if (#Treasure_Token < 300) goto N_NeedToken;
+   set #Treasure_Token,#Treasure_Token-300;
+   logmes "Treasure Token: Bought a Wrath of Valkyrie";
+   getitem 7078,1;
+   close;    
+D_FEATHER:
+   if (#Treasure_Token < 300) goto N_NeedToken;
+   set #Treasure_Token,#Treasure_Token-300;
+   logmes "Treasure Token: Bought a Feather of Angel Wing";
+   getitem 7079,1;
+   close;    
+D_FOOT:
+   if (#Treasure_Token < 300) goto N_NeedToken;
+   set #Treasure_Token,#Treasure_Token-300;
+   logmes "Treasure Token: Bought a Footprints of Cat";
+   getitem 7080,1;
+   close;    
+D_WOMAN:
+   if (#Treasure_Token < 300) goto N_NeedToken;
+   set #Treasure_Token,#Treasure_Token-300;
+   logmes "Treasure Token: Bought a Woman's Mustaches";
+   getitem 7081,1;
+   close;    
+D_ROOT:
+   if (#Treasure_Token < 300) goto N_NeedToken;
+   set #Treasure_Token,#Treasure_Token-300;
+   logmes "Treasure Token: Bought a Root of Stone";
+   getitem 7082,1;
+   close;    
+D_SPIRIT:
+   if (#Treasure_Token < 300) goto N_NeedToken;
+   set #Treasure_Token,#Treasure_Token-300;
+   logmes "Treasure Token: Bought a Spirit of Fish";
+   getitem 7083,1;
+   close;    
+D_SPUTUM:
+   if (#Treasure_Token < 300) goto N_NeedToken;
+   set #Treasure_Token,#Treasure_Token-300;
+   logmes "Treasure Token: Bought a Sputum of Bird";
+   getitem 7084,1;
+   close;    
+D_SINEW:
+   if (#Treasure_Token < 300) goto N_NeedToken;
+   set #Treasure_Token,#Treasure_Token-300;
+   logmes "Treasure Token: Bought a Sinew of Bear";
+   getitem 7085,1;
+   close;    
+D_BREATH:
+   if (#Treasure_Token < 300) goto N_NeedToken;
+   set #Treasure_Token,#Treasure_Token-300;
+   logmes "Treasure Token: Bought a Breath of Soul";
+   getitem 7087,1;
+   close;    
+D_SNOW:
+   if (#Treasure_Token < 300) goto N_NeedToken;
+   set #Treasure_Token,#Treasure_Token-300;
+   logmes "Treasure Token: Bought a Snow Crystal";
+   getitem 7088,1;
+   close;    
+D_OMEN:
+   if (#Treasure_Token < 300) goto N_NeedToken;
+   set #Treasure_Token,#Treasure_Token-300;
+   logmes "Treasure Token: Bought a Omen of Tempest";
+   getitem 7089,1;
+   close;    
+D_RIPPLE:
+   if (#Treasure_Token < 300) goto N_NeedToken;
+   set #Treasure_Token,#Treasure_Token-300;
+   logmes "Treasure Token: Bought a Ripple";
+   getitem 7090,1;
+   close;    
+D_BILLOW:
+   if (#Treasure_Token < 300) goto N_NeedToken;
+   set #Treasure_Token,#Treasure_Token-300;
+   logmes "Treasure Token: Bought a Billow";
+   getitem 7091,1;
+   close;
+D_DRIFTING:
+   if (#Treasure_Token < 300) goto N_NeedToken;
+   set #Treasure_Token,#Treasure_Token-300;
+   logmes "Treasure Token: Bought a Drifting Air";
+   getitem 7092,1;
+   close;
+D_EMBLEM:
+   if (#Treasure_Token < 400) goto N_NeedToken;
+   set #Treasure_Token,#Treasure_Token-400;
+   logmes "Treasure Token: Bought a Emblem of the Sun God";
+   getitem 7086,1;
+   close;
+D_DUSK:
+   if (#Treasure_Token < 400) goto N_NeedToken;
+   set #Treasure_Token,#Treasure_Token-400;
+   logmes "Treasure Token: Bought a Dusk Glow";
+   getitem 7835,1;
+   close;
+D_DAWN:
+   if (#Treasure_Token < 400) goto N_NeedToken;
+   set #Treasure_Token,#Treasure_Token-400;
+   logmes "Treasure Token: Bought a Dawn Essense";
+   getitem 7836,1;
+   close;
+D_COLD:
+   if (#Treasure_Token < 400) goto N_NeedToken;
+   set #Treasure_Token,#Treasure_Token-400;
+   logmes "Treasure Token: Bought a Cold Moonlight";
+   getitem 7837,1;
+   close;
+D_HAZY:
+   if (#Treasure_Token < 400) goto N_NeedToken;
+   set #Treasure_Token,#Treasure_Token-400;
+   logmes "Treasure Token: Bought a Hazy Starlight";
+   getitem 7838,1;
+   close;
+D_GODDES:
+   if (#Treasure_Token < 400) goto N_NeedToken;
+   set #Treasure_Token,#Treasure_Token-400;
+   logmes "Treasure Token: Bought a Goddess Tear";
+   getitem 7830,1;
+   close;
+D_VALK:
+   if (#Treasure_Token < 400) goto N_NeedToken;
+   set #Treasure_Token,#Treasure_Token-400;
+   logmes "Treasure Token: Bought a Valkyrie Token";
+   getitem 7831,1;
+   close;
+D_BRYN:
+   if (#Treasure_Token < 400) goto N_NeedToken;
+   set #Treasure_Token,#Treasure_Token-400;
+   logmes "Treasure Token: Bought a Brynhild Armor Piece";
+   getitem 7832,1;
+   close;
+D_HERO:
+   if (#Treasure_Token < 400) goto N_NeedToken;
+   set #Treasure_Token,#Treasure_Token-400;
+   logmes "Treasure Token: Bought a Hero Remains";
+   getitem 7833,1;
+   close;
+D_ANDVARI:
+   if (#Treasure_Token < 400) goto N_NeedToken;
+   set #Treasure_Token,#Treasure_Token-400;
+   logmes "Treasure Token: Bought a Andvari Ring";
+   getitem 7834,1;
+   close;
+
+}
