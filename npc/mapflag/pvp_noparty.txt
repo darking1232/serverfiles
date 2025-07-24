@@ -1,0 +1,44 @@
+//===== rAthena Script =======================================
+//= Mapflag: Ignore parties.
+//===== By: ==================================================
+//= rAthena Dev Team
+//===== Current Version: =====================================
+//= 1.2
+//===== Compatible With: =====================================
+//= rAthena Project
+//===== Description: ========================================= 
+//= Ignores party alliances on PvP-enabled maps.
+//===== Additional Comments: ================================= 
+//= 1.0 Initial script.
+//============================================================
+new_5-1	mapflag	pvp_noparty
+prt_maze03	mapflag	pvp_noparty
+pvproom	mapflag	pvp_noparty
+//moc_pryd06	mapflag	pvp_noparty
+//ra_fild02	mapflag	pvp_noparty
+//ra_fild03	mapflag	pvp_noparty
+//ra_fild04	mapflag	pvp_noparty
+//ve_fild01	mapflag	pvp_noparty
+//ve_fild02	mapflag	pvp_noparty
+//lou_dun03	mapflag	pvp_noparty
+//bra_dun02	mapflag	pvp_noparty
+//gl_chyard	mapflag	pvp_noparty
+//abyss_03	mapflag	pvp_noparty
+//gef_dun01	mapflag	pvp_noparty
+//treasure02	mapflag	pvp_noparty
+//gon_dun03	mapflag	pvp_noparty
+//abbey02	mapflag	pvp_noparty
+//xmas_fild01	mapflag	pvp_noparty
+//ra_san05	mapflag	pvp_noparty
+//prt_sewb4	mapflag	pvp_noparty
+//mosk_dun03	mapflag	pvp_noparty
+//kh_dun02	mapflag	pvp_noparty
+//xmas_dun02	mapflag	pvp_noparty
+//ice_dun03	mapflag	pvp_noparty
+//ayo_dun02	mapflag	pvp_noparty
+//anthell02	mapflag	pvp_noparty
+//ein_dun02	mapflag	pvp_noparty
+//beach_dun	mapflag	pvp_noparty
+//odin_tem03	mapflag	pvp_noparty
+//jupe_core	mapflag	pvp_noparty
+ordeal_3-2	mapflag	pvp_noparty

@@ -1,0 +1,3 @@
+sec_pri	mapflag	nodrop
+prontera	mapflag	nodrop
+prt_are01	mapflag	nodrop

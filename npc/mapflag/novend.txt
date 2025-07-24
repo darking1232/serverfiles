@@ -1,0 +1,6 @@
+prt_in	mapflag	novending
+prontera	mapflag	novending
+new_5-1	mapflag	novending
+yuno_in01	mapflag	novending
+izlude	mapflag	novending
+pvproom	mapflag	novending
