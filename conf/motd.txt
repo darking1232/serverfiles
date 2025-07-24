@@ -1,0 +1,13 @@
+// Internal default is limited to 128 lines.  If you need more, you will need to modify the MOTD_LINE_SIZE definition in pc.cpp
+^B6D7A8 [:+: ReviseRO :+:]
+ReviseRO Team wishes you a lot of fun on our server and definitely will let you meet new friends.
+[:+: Information :+:]~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Site: http://revise-ro.com
+Forum:http://revise-ro.com/forum
+[:+: Warning :+:]~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+- ReviseRO GM will never ask for your ID and password or other personal account information.
+- Do not use third party program to take advantage of the game!.
+- Do not Scam or Impersonate other player/GM.
++ Please report any bugs to our forum or any GM available.
++ Please make sure you follow all the rules. Never ever break it.
+~ Breaking the rules will result to sanctions.
