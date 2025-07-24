@@ -1,0 +1,13 @@
+sec_pri,21,63,4	script	JailTime	836,{
+
+mes "Hi here's your jail time";
+
+atcommand "@jailtime";
+
+close;
+
+}
+
+sec_pri,47,63,4	duplicate(JailTime)	JailTime#h1-1	836
+
+sec_pri,73,63,4	duplicate(JailTime)	JailTime#h1-2	836

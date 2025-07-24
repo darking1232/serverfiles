@@ -1,0 +1,48 @@
+prontera,146,147,5	script	Event Organizer	61,{
+        mes "[^FF0000Event Organizer^000000]";
+        mes "Hello there ^FF0000" + strcharinfo(0) + "^000000.";
+        mes "Please spend money";
+        switch(select("^FF0000~Exchange my event points^000000:Check my event Points:Nothing")) {
+	case 1: 
+		mes "Okay, then you can pick on my list!.";
+		switch(select("Miscellaneous & Etc.:Cards & Equipments:Others:Nothing")) {
+			case 1:
+				callshop "Miscellaneous", 1; end;
+			case 2:
+				callshop "CardsANDEquip", 1; end;
+			case 3:
+				callshop "otheritems", 1; end;
+			case 4:
+                		next;
+                		mes "[ Quick Mall ]";
+                		mes "Okay,come back when you need me.";
+                		close;
+		}
+        case 2: 
+		mes "[^FF0000Event Organizer^000000]";
+		mes "You now have " +#EVENTPOINTSS+ " Auto Event Points";
+		close;
+        case 3:
+                next;
+                mes "[ Quick Mall ]";
+                mes "Okay,come back when you need me.";
+                close;
+        }
+
+
+OnInit:
+waitingroom "Event Organizer",0;
+end;
+
+
+}
+
+-	pointshop	Miscellaneous	667,#EVENTPOINTSS,3121:3,3120:6,12903:100,12904:100,12906:100,12907:100,12908:100,13891:100,13892:100,13893:100,13894:100
+-	pointshop	CardsANDEquip	667,#EVENTPOINTSS,4399:2500,4365:3000,4363:3500,4367:4000,4361:5000,4357:5000,4359:5000
+-	pointshop	otheritems	667,#EVENTPOINTSS,50051:50,50052:50,7086:500,7073:500,7074:500,7075:500,7076:500,7077:500,7078:500,7079:500,7080:500,7081:500,7082:500,7083:500,7084:500,7085:500,7087:500,7088:500,7089:500,7090:500,7091:500,7092:500
+
+//1 gold coin= 5 silver coins
+//1 silver coin = 5 bronze coins
+//1 bronze=20 event points
+//1 silven coin=100 event
+//1 gold coin=500 event

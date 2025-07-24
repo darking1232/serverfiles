@@ -1,0 +1,3 @@
+prontera,169,228,5	script	Rentals Shop	100,{
+rentitem 50000, 8600;
+}

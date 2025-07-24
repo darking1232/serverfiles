@@ -1,0 +1,100 @@
+//CREATE TABLE IF NOT EXISTS `beta_reward` (
+//  `id` int(11) NOT NULL AUTO_INCREMENT,
+//  `account_id` int(11) NOT NULL DEFAULT '0',
+//  `char_id` int(11) NOT NULL DEFAULT '0',
+//  `name` varchar(30) NOT NULL DEFAULT '',
+//  `amount` int(11) unsigned NOT NULL DEFAULT '0',
+//  `claim_time` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
+//  PRIMARY KEY  (`id`)
+//) ENGINE=MyISAM;
+
+
+
+prontera,142,174,5	script	Beta Tester NPC	4_F_KAFRA1,{
+//make sure to change the "#COMPE_APRIL202020"
+//make sure to change the accountID range.
+//transfer char table to new table char_beta
+query_sql "SELECT `account_id` FROM `char_beta` WHERE `account_id` = "+getcharid(3)+"", .@account_id;
+if(!.@account_id){
+	mes "^FF0000[ Beta Tester NPC ]^000000";
+   	mes "You did not join our beta test OR you already received your reward. Therefore I cannot give you your reward.";
+	end;
+}
+		if (#BETAREWARDMAY <= 0) {
+			mes "^FF0000[ Beta Tester NPC ]^000000";
+			mes "Since you already tested our server.";
+			mes "May we ask to Please write a review at Ratemyserver.";
+			mes "link can be obtained from our website www.revise-ro.com";
+			sleep2 3000;
+			next;
+			mes "^FF0000[ Beta Tester NPC ]^000000";
+			mes "Beta Tester rewards is set to character bound.";
+			mes "Reward is strictly ^0000FF 1 character per Beta Testers account ^000000.";
+			mes "Are you sure you want this character to receive your BETA Tester reward?";
+			sleep2 5000;
+			if(select("Yes:No")==2) close;
+				next;
+					if (!.@account_id){
+							mes "^FF0000[ Beta Tester NPC ]^000000";
+							mes "It seems that you are not a beta tester";
+							end;
+					}
+					if( BaseJob==Job_Novice || BaseJob==Job_SuperNovice ) {
+							mes "^FF0000[ Beta Tester NPC ]^000000";
+							mes "Novice or Super Novice Job cannot claim the compensation.";
+							end;
+					}
+					if (vip_status(1)) {
+						mes "^FF0000[ Beta Tester NPC ]^000000";
+						mes "^008affYour account is currently subscribed to VIP. Please make sure that this account is not subscribed to VIP before claiming our Beta Test reward.^000000";
+						end;	
+					}
+					if (((Weight*100)/MaxWeight) < 50) {
+							query_sql "SELECT `char_id`,`account_id`,`name` FROM `char` WHERE `account_id` = "+getcharid(3)+" AND `name` = '"+strcharinfo(0)+"'", .@char_id,.@account_id,.@name$;
+							//mes "Your account ID is "+.@account_id+" , Your char ID is "+.@char_id+" , Your Name is "+.@name$+"";
+							//end;
+							if (!.@account_id){
+								mes "^FF0000[ Beta Tester NPC ]^000000";
+								mes "You did not join our beta testing phase. No reward for you";
+								end;
+							}
+							set #BETAREWARDMAY, 1;
+							getitembound 12412,5,Bound_Char; // HE bubble gum
+							getitembound 12214,5,Bound_Char; // Convex Mirror
+							getitembound 12202,10,Bound_Char; //Steamed Tongue
+							getitembound 12203,10,Bound_Char; //Steamed Scorpion
+							getitembound 12204,10,Bound_Char; //Dragon Breath Cocktail
+							getitembound 12205,10,Bound_Char; //Hwergelmir's Tonic
+							getitembound 12206,10,Bound_Char; //Cooked Nine Tail's Tails 
+							getitembound 12207,10,Bound_Char; //Stew Of Immortality
+							getitembound 3252,30,Bound_Char; //Level 200 All-in-One Buff Scroll
+							getitembound 671,1,Bound_Char; //1 Gold Coin
+							getitembound 50026,1,Bound_Char; //1 Costume item Ticket
+							vip_time (7 * 1440);
+							query_sql "DELETE FROM `char_beta` WHERE `account_id` = "+.@account_id+"";
+							query_sql "INSERT INTO `beta_reward` (`account_id`,`char_id`,`name`,`claim_time`) VALUES ("+.@account_id+",'"+.@char_id+"','"+.@name$+"',NOW())";
+							announce ""+strcharinfo(0)+": has received his/her Beta Test Reward. Congratulations and Thank you!.",0,0x00FF00;
+							mes "^FF0000[ Beta Tester NPC ]^000000";
+							mes "You gained reward for joining the BETA TEST.";
+							mes "You Also earned 7 Days of VIP for this account";
+							mes "Thank you for being one of our Beta Tester. I hope this will be enough :)";
+							sleep2 3000;
+							close;
+					}else {
+							mes "^FF0000[ Beta Tester NPC ]^000000";
+							mes "You're weight is more than 50%, Please remove some extra weight.";
+							close;
+					}
+
+		} else {
+				mes "^FF0000[ Beta Tester NPC ]^000000";
+				mes "You already received your BETA Tester Reward. Please write a review at Ratemyserver. link can be obtained from our website www.revise-ro.com";
+				close;
+		}
+	
+	end;
+OnInit:
+delwaitingroom;
+waitingroom "Beta Tester Reward",0;
+end;
+}

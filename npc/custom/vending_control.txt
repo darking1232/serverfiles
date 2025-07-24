@@ -1,0 +1,49 @@
+-	script	vendingmap	-1,{
+OnInit:
+set .map$,"turbo_room";
+setcell .map$,0,0,300,300,cell_novending,1;
+setcell .map$, 78,77, 78,132, cell_novending,0;
+setcell .map$, 84,84, 84,132, cell_novending,0;
+setcell .map$, 66,81, 66,97, cell_novending,0; //left most
+setcell .map$, 72,77, 72,97, cell_novending,0;
+setcell .map$, 90,80, 90,110, cell_novending,0;
+setcell .map$, 96,60, 96,110, cell_novending,0;
+setcell .map$, 103,60, 103,110, cell_novending,0;
+setcell .map$, 109,80, 109,130, cell_novending,0;
+setcell .map$, 115,84, 115,132, cell_novending,0;
+setcell .map$, 121,77, 121,132, cell_novending,0;
+setcell .map$, 127,77, 127,98, cell_novending,0;
+setcell .map$, 133,81, 133,98, cell_novending,0;
+end;
+}
+turbo_room,78,133,4	script	Vending Lane::vlane	858,{
+	mes "^0055FF[ Vending Area Rule ]^000000";
+	mes " You are only able to set-up vending on this lane.";
+	close;
+OnInit:
+    waitingroom "Vending Lane",0;
+end;
+
+}
+
+turbo_room,84,133,4	duplicate(vlane)	Vending_Lane#1	858
+turbo_room,66,98,4	duplicate(vlane)	Vending_Lane#2	858
+turbo_room,72,98,4	duplicate(vlane)	Vending_Lane#3	858
+turbo_room,90,111,4	duplicate(vlane)	Vending_Lane#4	858
+turbo_room,96,111,4	duplicate(vlane)	Vending_Lane#5	858
+turbo_room,103,111,4	duplicate(vlane)	Vending_Lane#6	858
+turbo_room,109,111,4	duplicate(vlane)	Vending_Lane#7	858
+turbo_room,115,133,4	duplicate(vlane)	Vending_Lane#8	858
+turbo_room,121,133,4	duplicate(vlane)	Vending_Lane#9	858
+turbo_room,127,98,4	duplicate(vlane)	Vending_Lane#10	858
+turbo_room,133,98,4	duplicate(vlane)	Vending_Lane#11	858
+
+
+turbo_room	mapflag	nobranch
+turbo_room	mapflag	nodrop
+turbo_room	mapflag	nochat
+turbo_room	mapflag	noicewall
+turbo_room	mapflag	pvp	off
+turbo_room	mapflag	gvg	off
+turbo_room	mapflag	fog
+turbo_room	mapflag	autotrade

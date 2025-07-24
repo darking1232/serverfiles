@@ -1,0 +1,13 @@
+-	script	Newss	-1,{
+OnInit:
+set .Times,25;		// Announce every x Minute.
+
+setarray .Newss$[0],	// Random Message to be Announced
+		"Like and Share event Season 3 posted on our facebook page. Join now!",
+		"ReviseRO is now hiring potential Game Master/s. Please visit our forum for more information";
+while( 1 ){
+	announce .Newss$[ rand( getarraysize( .News$ ) ) ],0;
+	sleep ( .Times * 60000 );
+	}
+end;
+}

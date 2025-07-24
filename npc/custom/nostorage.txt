@@ -1,0 +1,10 @@
+-	script	Nostorage	-1,{
+OnInit:
+    bindatcmd "storage",strnpcinfo(0)+"::OnAtcommand";
+    end;
+OnAtcommand:
+    if( strcharinfo(3) == "ordeal_3-2" )
+        message strcharinfo(0),"You cannot use @storage on goldroom";
+    else openstorage;
+    end;
+}

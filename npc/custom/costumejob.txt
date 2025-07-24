@@ -1,0 +1,178 @@
+//===== rAthena Script ======================================= 
+//= Dress Room
+//===== Description ==========================================
+//= Dress room NPC that allows players to disguise as another
+//= class in their classline.
+//===== By: ================================================== 
+//= Secret's Scripting Service
+//===== Changelog: ===========================================
+//= 1.0 Initial version. [Secret]
+//===== License: =============================================
+// Copyright 2018 Jittapan P.
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
+//= to deal in the Software without restriction, including without limitation the rights to use,
+//= copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software,
+//= and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+//=
+//= The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+//=
+//= THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+//= EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+//= FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+//= IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
+//= DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
+//= TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+//============================================================
+
+prontera,170,227,4	script	Dress Room#sc	834,{
+function RestrictClass;
+function HasjROCostume;
+function ChangeAppr;
+	//if( getgroupid() > 5 ) end;
+	if(BaseLevel != 255){
+		mes " Only Base Level 255 can only utilize my service.";
+		close;
+	}
+	if (countitem(50027) < 1){
+		mes "You do not have the Job Ticket from your inventory. It can be purchased from the donation shop.";
+		close;
+	}
+	//@eac = eaclass();
+  	//if(!@eac&EAJL_UPPER){
+     	//	dispbottom "You must be Transjob to use my service.";
+ 	//}
+	//end;
+
+
+function RestrictClass {
+	.@eaj = eaclass();
+	if(.@eaj&EAJ_BASEMASK == EAJ_NOVICE) return 0;
+	if(.@eaj&EAJL_2 && roclass(.@eaj|EAJL_UPPER) != -1){
+		return 1;
+	}
+	return 0;
+}
+
+function HasjROCostume {
+	switch(roclass(eaclass()&EAJ_UPPERMASK|EAJL_THIRD)) {
+		case Job_Guillotine_Cross:
+		case Job_Genetic:
+		case Job_Royal_Guard:
+		case Job_Arch_Bishop:
+		case Job_Mechanic:
+		case Job_Ranger:
+		case Job_Minstrel:
+		case Job_Wanderer:
+		case Job_Warlock:
+		// Uncomment lines below to enable certain job when their respective jRO costume is released and you patched the sprite in your client.
+		//case Job_Sorcerer:
+		//case Job_Sura:
+		//case Job_Rune_Knight:
+			return 1;
+		default:
+			return 0;
+	}
+}
+
+function ChangeAppr {
+	if(Zeny < .cost_dressroom) {
+		mes .n$;
+		mes "You don't have enough Zeny.";
+		close;
+	}
+	switch(getarg(1)){
+		case 0: // Normal Mode
+			setlook LOOK_BODY2,0;
+			changebase getarg(0);
+			set baselook, getarg(0);
+			break;
+		case 1: // jRO Mode
+			if(!HasjROCostume()) return;
+			changebase roclass(eaclass()|EAJL_THIRD);
+			setlook LOOK_CLOTHES_COLOR,0;
+			setlook LOOK_BODY2,!(getlook(LOOK_BODY2));
+			//atcommand "@bodystyle " + !(getlook(LOOK_BODY2));
+			baselook = 0;
+			break;
+	}
+	delitem 50027,1;
+	Zeny -= .cost_dressroom;
+	mes .n$;
+	mes "Here you are!.come backa again!";
+	close;
+}
+
+	.@TYPE_CHANGEBASE = 0;
+	.@TYPE_SETLOOK = 1;
+	
+	mes .n$;
+	if(!RestrictClass()){
+		mes "Your class isn't allowed to use this NPC.";
+		close;
+	}
+	mes "^FF0000 Take note: ^0000FF";
+	mes "Changing appearance will be permanent. However it can be reverted if the item and zeny requirement has been met.";
+	next;
+	mes .n$;
+	mes "I can change your appearance to another class of your classline at a cost of ^FF0000" + callfunc("F_InsertComma",.cost_dressroom) + "^000000z!";
+	if(HasjROCostume()){
+		mes "I also have a brand new costume for your class!";
+	}
+	next;
+	mes .n$;
+	mes "Which class do you want to change your appearance to?";
+	next;
+	switch(select(jobname(roclass(eaclass()&EAJ_UPPERMASK)),jobname(roclass(eaclass()&EAJ_UPPERMASK|EAJL_BABY)),jobname(roclass(eaclass()&EAJ_UPPERMASK|EAJL_UPPER)),"I Changed my mind")) {
+		case 1:
+			mes .n$;
+			mes "Are you sure you want to change your appearance to ^FF0000" + jobname(roclass(eaclass()&EAJ_UPPERMASK)) +"^0000FF?";
+			mes "You got 2 seconds to decide.";
+			sleep2 2000;
+			if(select("Yes:No")==2) close;
+			ChangeAppr(roclass(eaclass()&EAJ_UPPERMASK),.@TYPE_CHANGEBASE);
+			break;
+		case 2:
+			mes .n$;
+			mes "Are you sure you want to change your appearance to ^FF0000" + jobname(roclass(eaclass()&EAJ_UPPERMASK|EAJL_BABY)) +"^0000FF?";
+			mes "You got 2 seconds to decide.";
+			sleep2 2000;
+			if(select("Yes:No")==2) close;
+			ChangeAppr(roclass(eaclass()&EAJ_UPPERMASK|EAJL_BABY),.@TYPE_CHANGEBASE);
+			break;
+
+		case 3:
+			mes .n$;
+			mes "Are you sure you want to change your appearance to ^FF0000" + jobname(roclass(eaclass()&EAJ_UPPERMASK|EAJL_UPPER)) +"^0000FF?";
+			mes "You got 2 seconds to decide.";
+			sleep2 2000;
+			if(select("Yes:No")==2) close;
+			ChangeAppr(roclass(eaclass()&EAJ_UPPERMASK|EAJL_UPPER),.@TYPE_CHANGEBASE);
+			break;
+		//case 4:
+		//	mes .n$;
+		//	mes "Are you sure you want to change your appearance to ^FF0000" + jobname(roclass(eaclass()|EAJL_THIRD)) +"^0000FF?";
+		//	mes "You got 2 seconds to decide.";
+		//	sleep2 2000;
+		//	if(select("Yes:No")==2) close;
+		//	ChangeAppr(roclass(eaclass()|EAJL_THIRD),.@TYPE_CHANGEBASE);
+		//	break;
+		case 4:
+			mes "Come again!";
+			close;
+			break;
+	}
+	close;
+		
+OnPCLoginEvent:
+	if(baselook && .dress_perma){
+		changebase baselook;
+	}
+	end;
+OnInit:
+	.n$ = "[^0000ffDress Room^000000]"; // NPC Name
+	.cost_dressroom = 100000000; // Cost
+	.dress_perma = 1;
+	delwaitingroom;
+	waitingroom "Costume Appearance",0;
+}

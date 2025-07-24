@@ -1,0 +1,35 @@
+//issue it bypasses the mapflag
+-	script	war_pay	-1,{
+OnInit:
+bindatcmd "warp",strnpcinfo(3)+"::OnWarpCommand";
+end;
+OnWarpCommand:
+	if(.@atcmd_numparameters != 1 && .@atcmd_numparameters != 3){
+		dispbottom "It will cost you 1,000 zeny to warp.";
+		dispbottom "@warp Failed.";
+		dispbottom "@warp <map_name> <x> <y>";
+		dispbottom "@warp <map_name>,<x>,<y>";
+		end;
+	}
+
+	.@command$ = strtolower(.@atcmd_parameters$[0]);
+	.@x = atoi(.@atcmd_parameters$[1]);
+	.@y = atoi(.@atcmd_parameters$[2]);
+	if(.@atcmd_numparameters == 1){
+		if(compare(.@command$,",")){
+			explode(.@info$, .@command$, ",");
+			.@command$ = .@info$[0];
+			.@x = atoi(.@info$[1]);
+			.@y = atoi(.@info$[2]);
+		}
+	}
+	//if( getmapflag( strcharinfo(4),mf_nowarp,0 )){ dispbottom "Unauthorized to enter the map."; end;}
+	dispbottom "It cost you 1,000 zeny to warp.";
+	if ( Zeny > 1000 ){
+		set Zeny, Zeny - 1000;
+			warp .@command$,.@x,.@y;
+		end;
+	}
+	dispbottom "Can't warp you. You don't have zeny.";
+	end;
+}

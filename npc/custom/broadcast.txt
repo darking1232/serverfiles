@@ -1,0 +1,105 @@
+prontera,182,215,4	script	Broadcaster#1::BC	894,{
+	
+	if (agitcheck() || agitcheck2()){
+	mes .header$; 
+	mes "War of Emperium is ongoing!"; 
+	close;
+	}
+	if (BaseLevel != 255){
+	mes .header$; 
+	mes "You can't use my services while you're still a Rookie in this game"; 
+	close;
+	}
+	if (vip_status(1)) {
+			mes .header$;
+			mes "Hi, I'm the Broadcaster";
+			mes "I can Broadcast a message for you";
+			next;
+			mes .header$;
+			mes "Since you are a VIP. It costs ^ff0000 500,000 ^000000 zeny.";
+			next;
+			mes .header$;
+			mes "Would you like to Broadcast?";
+			next;
+			switch (select("Yes","Nevermind")){
+			case 1:
+		
+				if(gettimetick(2) - #Broadcast < (60 * 2) && (getgmlevel() != 99)) { // 2mins delay
+					set .@i, (priest+(10 * 1)) - gettimetick(2);
+					if (.@i > 3600) set .@j$, (.@i/3600)+" hour"+(((.@i/3600) == 1)?"":"s");
+					else if (.@i > 60) set .@j$, (.@i/60)+" minute"+(((.@i/60) == 1)?"":"s");
+					else set .@j$, (.@i)+" second"+((.@i == 1)?"":"s");
+					mes .header$;
+					mes "You have to wait "+.@j$+" before taking another broadcast.";
+					close;
+				}
+		
+				mes .header$;
+				mes "Please input your message.";
+				next;
+				input .@broadcast$;
+				if(Zeny < 1000000) goto nozeny;
+				set Zeny,zeny - 1000000;
+				announce "Message from [VIP]"+strcharinfo(0)+": "+.@broadcast$+"",0,0x00FF00;
+				set #Broadcast, gettimetick(2); 
+				close;
+			case 2:
+				mes .header$;
+				mes "Suit yourself";
+				close;
+			}
+	}
+	mes .header$;
+	mes "Hi, I'm the Broadcaster";
+	mes "I can Broadcast a message for you";
+	next;
+	mes .header$;
+	mes "It costs ^ff0000"+.broadcastfee+"^000000 zeny.";
+	next;
+	mes .header$;
+	mes "Would you like to Broadcast?";
+	next;
+	switch (select("Yes","Nevermind")){
+	case 1:
+
+		if(gettimetick(2) - #Broadcast < (60 * 5) && (getgmlevel() != 99)) { // 5mins delay
+			set .@i, (priest+(10 * 1)) - gettimetick(2);
+			if (.@i > 3600) set .@j$, (.@i/3600)+" hour"+(((.@i/3600) == 1)?"":"s");
+			else if (.@i > 60) set .@j$, (.@i/60)+" minute"+(((.@i/60) == 1)?"":"s");
+			else set .@j$, (.@i)+" second"+((.@i == 1)?"":"s");
+			mes .header$;
+			mes "You have to wait "+.@j$+" before taking another broadcast.";
+			close;
+		}
+
+		mes .header$;
+		mes "Please input your message.";
+		next;
+		input .@broadcast$;
+		if(Zeny < 2000000) goto nozeny;
+		set Zeny,zeny - .broadcastfee;
+		announce "Message from "+strcharinfo(0)+": "+.@broadcast$+"",0,0xE5F30B;
+		set #Broadcast, gettimetick(2); 
+		close;
+	case 2:
+		mes .header$;
+		mes "Suit yourself";
+		close;
+	}
+
+nozeny:
+	mes .header$;
+	mes "Im sorry but you don't have enough zeny";
+	mes "Come back again you have enough zeny";
+	close;
+
+OnInit:
+	set .header$,"[^0000ffBroadcaster^000000]";
+	set .broadcastfee, 2000000;
+waitingroom "Broadcaster NPC",0;
+end;
+
+}
+
+//splendide,194,182,3	duplicate(BC)	Broadcaster#2	894
+ 

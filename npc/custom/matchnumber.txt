@@ -1,0 +1,39 @@
+new_1-4,20,185,4	script	Player Lounge	100,{
+    // Item ID,Amount
+	mes "[^FF9900 ReviseRO Player Lounge ^000000]";
+	mes "While we wait for the grand opening. We shall play a game.";
+	mes "Game is Easy. Just bet 100 zeny and got a chance to win 1000 zeny.";
+	mes "choose a number from 0 to 9. I will choose a number also. If our number matched you win. if not then I win.";
+	mes "Let us start!.";
+	next;
+	mes "[^FF9900 ReviseRO Player Lounge ^000000]";
+    	mes "Input your number";
+    	mes "Note: Entering a non valid number will automatically set your chosen number to 9.";
+    	next;
+    	input .@guess,0,9;
+	mes "You already won "+ #matchnumber +" times";
+    	mes "Roll roll roll ~";
+    	next;
+    	.random_number = rand(0,9);
+    
+    	if ( .@guess == .random_number ) {
+        set Zeny, Zeny + 1000;
+	mes "[^FF9900 ReviseRO Player Lounge ^000000]";
+	mes "You Won!";
+	mapannounce "new_1-4", strcharinfo(0) + " has won our little game.",0;
+	set #matchnumber, #matchnumber + 1;
+	if (#matchnumber >= 200){
+		mapannounce "new_1-4", strcharinfo(0) + " HAS WON A SPECIAL REWARD FOR WINNING THE GAME FOR 200 TIMES!.",0;
+		getitembound 50017,5,Bound_Char;
+		set #matchnumber, 0;
+	}
+	close;
+   	 } else {
+        set Zeny, Zeny - 100;
+        mes "Better luck next time!";
+        mes "My number : " +.random_number;
+        mes "Your number : " +.@guess;
+	close;
+    }
+    close;
+}

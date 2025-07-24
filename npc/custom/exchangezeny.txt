@@ -1,0 +1,47 @@
+turbo_room,88,117,5	script	Zeny Boy	832,{
+	mes "[^FF9900 Zeny Boy ^000000]";
+	mes "Welcome to ReviseRO Zeny World!";
+	mes "I can change your spare 1Billion Zeny to a Zeny Boy ReviseRO Points Box";
+	sleep2 2000;
+	next;
+	mes "[^FF9900 Zeny Boy ^000000]";
+	mes "^FF0000[Noted: I can only trade to you once every 24 hours.]^000000";
+	next;
+	mes "[^FF9900 Zeny Boy ^000000]";
+	mes "Shall we proceed to trade your zeny for my Box?";
+	switch( select( "NO Thank you!","Yes please!")){
+case 1:
+	next;
+	mes "[^FF9900 Zeny Boy ^000000]";
+	mes "Let me know when you are ready!";
+	close;
+	break;
+
+case 2:
+	next;
+	if ( Zeny < 1000000000 ) {
+		mes "[^880000Arena Master^000000]";
+		mes "You don't have enough zeny.";
+        	mes "You need to pay 1,000,000,000 zeny. ";
+		close;
+	}
+	if( #allowzenyexchange > gettimetick(2) ){
+		set .last,#arenaRoomDelay - gettimetick(2);
+		set .@min, .last % ( 24 * 3600 ) % 3600 / (60);
+		set .@minutes, .last / 60;
+		set .@hourss, .@minutes / 60;
+		next;
+		mes "[^0055FF ::: Arena Master ::: ^000000]";
+		mes "Wait for ^FF0000"+.@hourss+" Hours OR "+.@minutes+" Minutes OR "+ .last + " Seconds before Entering^000000.";
+		close;	
+	}else
+	{
+		announce "[Zeny Boy] "+strcharinfo(0)+" Has exchanged his/her earnings for a Zeny boy reviseRO Point Box.",0,0xFF6600;
+                set Zeny, Zeny - 1000000000;
+		set #allowzenyexchange,gettimetick(2) + ( 1440 * 60 );
+                getitem 50054,1;
+		end;
+        }
+}
+
+}

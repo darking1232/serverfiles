@@ -1,0 +1,131 @@
+//===== Gogcel Ro Scripts ================================== 
+//= No double login in one map
+//===== By: ================================================== 
+//= Tauro
+//===== Current Version: =====================================
+//= 1.00
+//===== Compatible With: =====================================
+//= rAthena SVN
+//===== Description: =========================================
+//= Avoid double login in 1 designated map and has unique_id
+//= by gepard
+//===== Comments: ============================================
+//= Edit line 26 to use gepard authenticator or ip
+//=	Edit line 64 if you use the system by ip
+//=	Edit loadevent maps in line 86
+//===== Contact Info: ========================================
+//= [Tauro] 
+//= Email: tauro20890@gmail.com
+//= Discord: Trinity#7962
+//============================================================
+/*
+CREATE TABLE IF NOT EXISTS `gpack_map_check` (
+	`id` int(11) NOT NULL AUTO_INCREMENT,
+	`account_id` int(11) NOT NULL default '0',
+	`char_id` int(11) NOT NULL default '0',
+	`char_name` varchar(30) NOT NULL default 'none',
+	`gepard_unique_id` int(11) unsigned NOT NULL DEFAULT '0',
+	`last_ip` varchar(100) NOT NULL DEFAULT '',
+	PRIMARY KEY  (`id`)
+) ENGINE=MyISAM;
+*/
+
+
+-	script	dl_map	-1,{
+
+OnInit:
+	// 1= if you have gepard 0=if you do not use gepard
+	set .Gepard,1;
+	set .@map$, "coliseum";
+	end;
+	
+OnPCLoadMapEvent:
+if ( strcharinfo(3) == "coliseum") {
+	getinventorylist;
+	.@weight = 100 * Weight / MaxWeight;
+	if ( @inventorylist_count > 100 ) {
+		dispbottom "You have 100 different items in your inventory. Please store your items first in your storage.";
+		mapannounce "coliseum", ""+strcharinfo(0)+" has more than 100 items in his/her inventory. Warping back to prontera",0;
+		warp "prontera",156,183;
+		end;
+	}else if((.@weight) > 50){
+		dispbottom "You must atleast have 50 percent extra weight to receive guildpack.";
+		dispbottom "You are currently at " + .@weight + " percent of your maximum weight. ";
+		mapannounce "coliseum", ""+strcharinfo(0)+" weight is more than 50%. Warping back to prontera",0;
+		warp "prontera",156,183;
+		end;
+	}else if(BaseLevel != 255){
+		dispbottom "You should be level 255 to be eligible for Guild package.";
+		mapannounce "coliseum", ""+strcharinfo(0)+" is not level 255. Warping back to prontera.",0;
+		warp "prontera",156,183;
+		end;
+	}
+	if(getd("$GpackID_" + .@unique_id$) > 0  || #GuildPackReward > 0){
+		mapannounce "coliseum", ""+strcharinfo(0)+" is trying to get another Guild Package. SHAME on you!. Warping back to prontera.",0;
+		//query_sql "INSERT INTO `claimed_gpack` (`account_id`,`char_id`,`char_name`,`guild_name`,`received`,`time`,`gepard_unique_id`,`last_ip`) VALUES ("+.@account_id+","+.@char_id+",'"+.@name$+"','"+.@guild_name$+"','0',NOW(),'"+.@last_unique_id$+"','"+.@last_ip$+"')";
+		warp "prontera",156,183;
+		end;
+	}
+	if (.Gepard == 1) {
+		getmapxy( .@map$, .@mapx, .@mapy, BL_PC );
+		query_sql("SELECT last_ip FROM `login` WHERE account_id = "+getcharid(3)+"", .@UltimaIp$);
+		query_sql("SELECT last_unique_id FROM `login` WHERE account_id = "+getcharid(3)+"", .@UniqueId$);
+		query_sql("SELECT account_id FROM `login` WHERE last_unique_id = '"+.@UniqueId$+"'", .@CuentaId);
+		query_sql "INSERT INTO `gpack_map_check` (`account_id`,`char_name`,`gepard_unique_id`,`last_ip`) VALUES ("+.@CuentaId+",'"+strcharinfo(0)+"','"+.@UniqueId$+"','"+.@UltimaIp$+"')";
+		set .@error,getcharid(3,strcharinfo(0));
+		for(set .@i ,0;.@i<getarraysize(.@CuentaId);set .@i,.@i+1) {
+			if(attachrid(.@CuentaId[.@i])) {
+				if (.@UniqueId$ == "2843194742") {
+					set .@j,0;
+				} else {
+					getmapxy(.@map2$,.@mapx2,.@mapy2,BL_PC );
+					if (.@map2$ == .@map$){
+						set .@j,.@j+1;
+					}
+				}
+			}	
+		}
+		detachrid;
+	
+	attachrid .@error;
+	if(.@j > 1) {
+		dispbottom "1 PC or LAPTOP per account only.";
+		mapannounce "coliseum", ""+strcharinfo(0)+" has been warped back to prontera. REASON: dual client user.",0;
+		//query_sql "INSERT INTO `gpack_map_check` (`account_id`,`char_name`,`gepard_unique_id`,`last_ip`) VALUES ("+.@CuentaId+",'"+strcharinfo(0)+"','"+.@UniqueId$+"','"+.@UltimaIp$+"')";
+		warp "prontera",156,183;
+	}
+
+	end;
+	} else {
+		getmapxy( .@map$, .@mapx, .@mapy, BL_PC );
+		query_sql("SELECT last_ip FROM `login` WHERE account_id = "+getcharid(3)+"", .@UltimaIp$);
+		query_sql("SELECT account_id FROM `login` WHERE last_ip = '"+.@UltimaIp$+"'", .@CuentaId);
+		set .@error,getcharid(3,strcharinfo(0));
+		for(set .@i ,0;.@i<getarraysize(.@CuentaId);set .@i,.@i+1) {
+			if(attachrid(.@CuentaId[.@i])) {
+//if .Gepard is 0 add id of accounts to which the system will not affect, brothers, couple, gms, etc ... .@CuentaId == accountId
+				if (.@CuentaId == 1 ) {
+					set .@j,0;
+				} else {
+					getmapxy(.@map2$,.@mapx2,.@mapy2,BL_PC );
+					if (.@map2$ == .@map$){
+						set .@j,.@j+1;
+					}
+				}
+			}	
+		}
+		detachrid;
+	
+	attachrid .@error;
+	if(.@j > 1) {
+		dispbottom "1 PC or LAPTOP per account only.";
+		warp "prontera",156,183;
+	}
+
+	end;
+	}
+}
+}
+
+//loadevents
+coliseum	mapflag	loadevent

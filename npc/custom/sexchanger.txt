@@ -1,0 +1,48 @@
+//===============================================================================
+// SexChanger NPC
+// Made by Anna pango
+//===============================================================================
+
+-	script	Sex Changer	-1,{
+set @SCprice, 500000000;
+mes "[^0000FF Bicky BeloBelo ^000000]";
+mes "Hi!  I can change the sex of your account for ^FF0000 500,000,000z^000000...";
+next;
+mes "[^0000FF Bicky BeloBelo ^000000]";
+if (sex > 0){
+	mes "Would you like me to change your account to a female one?";
+	goto SCmenu;
+}
+mes "Would you like me to change your account into a male one?";
+next;
+SCmenu:
+	if (select("Yes:No") == 2) goto SCcancel;
+	next;
+	if (zeny < @SCprice){
+		mes "[^0000FF Bicky BeloBelo ^000000]";
+		mes "You don't seem to have enough zeny.  Come back when you have enough!";
+		close;
+	}
+	if (class == job_bard || job_dancer || job_clown || job_gypsy || job_baby_bard || job_baby_dancer){
+		set SCjlevel,150;
+		set SCActive,1;
+	}
+	set zeny,zeny-@SCprice;
+	atcommand "@changesex";
+	atcommand "@changecharsex";
+	end;
+SCcancel:
+next;
+	mes "[^0000FF Bicky BeloBelo ^000000]";
+	mes "Suit yourself... Come back if you change your mind!";
+	close;
+OnPCLoginEvent:
+	if (class == job_bard || job_dancer || job_clown || job_gypsy || job_baby_bard || job_baby_dancer) && (SCactive > 0){
+		set JobLevel,SCjlevel;
+		set SkillPoint,0;
+		set SCActive,0;
+	}
+	end;
+}
+
+prt_in,234,107,6	duplicate(Sex Changer)	Bicky BeloBelo#mlna	569

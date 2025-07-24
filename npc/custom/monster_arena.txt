@@ -1,0 +1,287 @@
+prontera,163,145,4	script	Monster Arena	450,{
+//cutin "arena_01",2;
+strt:
+mes "[^880000Arena Master^000000]";
+mes "Good day ^008800"+strcharinfo(0)+"^000000 ";
+mes "How may i help you?";
+mes " ";
+mes " ";
+mes " ";
+switch(select("^000088Enter Arena^000000:How many is my Arena Points:Information")){
+//==========================arena room=======================
+case 1:
+	next;
+	mes "[^880000Arena Master^000000]";
+	mes "I will require 10,000,000 Zeny per entry.";
+	mes "Do you have it with you??";
+	if(select("Yes","No")==2){ goto L_Later; }
+	next;
+		if ( Zeny < 10000000 ) {
+			mes "[^880000Arena Master^000000]";
+			mes "You don't have enough zeny.";
+        		mes "You need to pay 100,000,000 zeny. ";
+		close;
+		}
+		if( #arenaRoomDelay > gettimetick(2) ){
+			set .last,#arenaRoomDelay - gettimetick(2);
+			set .@min, .last % ( 24 * 3600 ) % 3600 / (60);
+			set .@minutes, .last / 60;
+			set .@hourss, .@minutes / 60;
+			next;
+			mes "[^0055FF ::: Arena Master ::: ^000000]";
+			mes "Wait for ^FF0000"+.@hourss+" Hours OR "+.@minutes+" Minutes OR "+ .last + " Seconds before Entering^000000.";
+			close;	
+		}else
+		{
+			announce "[Monster Arena] "+strcharinfo(0)+" Has Entered Monster Arena.",0,0xFF6600;
+                   	set Zeny, Zeny - 10000000;
+			set #allowarenaroom, 1;
+                    	warp "bat_b02" ,0,0;
+			end;
+               	}
+break;
+
+
+L_Later:
+mes "[^880000Arena Master^000000]";
+mes "Dont waste my time!..";
+close;
+
+
+
+case 2:
+	next;
+	mes "[^880000Arena Master^000000]";
+	mes "You current Arena Points is "+#arenapoints;
+	next;
+	goto strt;
+break;
+//==========================================information==============================================
+
+case 3:
+next;
+mes "[^880000Arena Master^000000]";
+mes "Monsters Inside The Room:";
+mes "^880000x2 Arena Ifrit^000000";
+mes "^880000x2 Arena Valkyrie Randgris^000000";
+mes "^880000x5 Arena Ktullanux^000000";
+mes "^880000x2 Arena Beelzebub^000000";
+mes "^880000x30 Arena Sword Guardian^000000";
+mes "^880000x30 Arena Bow Guardian^000000";
+mes "^880000x25 Arena Ice Titan^000000";
+mes "^880000x5 Arena Blue Flower^000000";
+next;
+mes "[^880000Arena Master^000000]";
+mes "Boss Monsters respawn half of the ratemyserver spawn time.";
+mes "--------------------------------------";
+mes "Non Boss Monster respawn after 3 Minutes after killing the monster.";
+mes "--------------------------------------";
+mes "No Monster drops in the Monster Arena.";
+//next;
+//	mes "[^880000Arena Master^000000]";
+//      	mes "^FF000010% of your Arena Points will lose when you die!^000000 ";
+//	sleep2 3000;
+
+next;
+	mes "[^0055FF ::: Arena Master ::: ^000000]";
+	mes "You are only allowed to gather a maximum of 250 Arena Points. After gaining 250 Arena Points. You must wait 3 hours before re-enter again.";
+	Sleep2 5000;
+	next;
+	mes "[^0055FF ::: Arena Master ::: ^000000]";
+	mes "You already accumulated "+ #arenapointscount +" Points.";
+	mes "^FF0000[NOT YOUR ACTUAL ARENA POINTS BUT ONLY A COUNTER HOW MANY YOU ACCUMULATED BEFORE YOU WILL REACH 250 Points before THE 3 HOURS DELAY]^000000";
+	sleep2 5000;
+    next;
+goto strt;
+}
+
+
+
+//OnPCDieEvent:
+//        .@killerrid = killerrid;
+//        if (strcharinfo(3) == "bat_b02" && .@killerrid != getcharid(3)) {
+//		if ( #arenapoints >= 20){
+//			set #arenapoints, #arenapoints - ((10 * #arenapoints) / 100);
+//            		dispbottom "You died, you lost 10% of your Arena points. Your Arena points now is " +#arenapoints;
+//			warp "prontera",156,191;
+//			end;
+//		}
+//            	dispbottom "You died, No deduction on your gold points. Your Gold points is " +#arenapoints;
+//		warp "prontera",156,191;
+//        }
+//        end;
+
+
+}
+
+
+
+
+
+-	script	ifrit_main	-1,{
+   OnKill:
+	if ( (#arenapointscount >= 250) && (#arenaRoomDelay < gettimetick(2)) ){
+		dispbottom "You already reached 250 Arena Points. You may come back again after 3 hours.";
+		set #arenaRoomDelay,gettimetick(2) + ( 180 * 60 );
+		#arenapointscount = 0;
+		warp "prontera",156,191;
+		set #allowarenaroom, 0;
+		end;
+	}
+		.@point = 50;
+		#arenapoints += .@point;
+		#arenapointscount += .@point;
+		dispbottom "Gained "+.@point+" Arena Points. You got "+F_InsertComma( #arenapoints )+" Arena Points now.";
+	end;
+}
+-	script	valk_main	-1,{
+   OnKill:
+	if ( (#arenapointscount >= 250) && (#arenaRoomDelay < gettimetick(2)) ){
+		dispbottom "You already reached 250 Arena Points. You may come back again after 3 hours.";
+		set #arenaRoomDelay,gettimetick(2) + ( 180 * 60 );
+		#arenapointscount = 0;
+		warp "prontera",156,191;
+		set #allowarenaroom, 0;
+		end;
+	}
+		.@point = 50;
+		#arenapoints += .@point;
+		#arenapointscount += .@point;
+		dispbottom "Gained "+.@point+" Arena Points. You got "+F_InsertComma( #arenapoints )+" Arena Points now.";
+	end;
+}
+-	script	bapho_main	-1,{
+   OnKill:
+	if ( (#arenapointscount >= 250) && (#arenaRoomDelay < gettimetick(2)) ){
+		dispbottom "You already reached 250 Arena Points. You may come back again after 3 hours.";
+		set #arenaRoomDelay,gettimetick(2) + ( 180 * 60 );
+		#arenapointscount = 0;
+		warp "prontera",156,191;
+		set #allowarenaroom, 0;
+		end;
+	}
+		.@point = 100;
+		#arenapoints += .@point;
+		#arenapointscount += .@point;
+		dispbottom "Gained "+.@point+" Arena Points. You got "+F_InsertComma( #arenapoints )+" Arena Points now.";
+	end;
+}
+-	script	ktull_main	-1,{
+   OnKill:
+	if ( (#arenapointscount >= 250) && (#arenaRoomDelay < gettimetick(2)) ){
+		dispbottom "You already reached 250 Arena Points. You may come back again after 3 hours.";
+		set #arenaRoomDelay,gettimetick(2) + ( 180 * 60 );
+		#arenapointscount = 0;
+		warp "prontera",156,191;
+		set #allowarenaroom, 0;
+		end;
+	}
+		.@point = 50;
+		#arenapoints += .@point;
+		#arenapointscount += .@point;
+		dispbottom "Gained "+.@point+" Arena Points. You got "+F_InsertComma( #arenapoints )+" Arena Points now.";
+	end;
+}
+-	script	beelze_main	-1,{
+   OnKill:
+	if ( (#arenapointscount >= 250) && (#arenaRoomDelay < gettimetick(2)) ){
+		dispbottom "You already reached 250 Arena Points. You may come back again after 3 hours.";
+		set #arenaRoomDelay,gettimetick(2) + ( 180 * 60 );
+		#arenapointscount = 0;
+		warp "prontera",156,191;
+		set #allowarenaroom, 0;
+		end;
+	}
+		.@point = 50;
+		#arenapoints += .@point;
+		#arenapointscount += .@point;
+		dispbottom "Gained "+.@point+" Arena Points. You got "+F_InsertComma( #arenapoints )+" Arena Points now.";
+	end;
+}
+-	script	sword_main	-1,{
+   OnKill:
+	if ( (#arenapointscount >= 250) && (#arenaRoomDelay < gettimetick(2)) ){
+		dispbottom "You already reached 250 Arena Points. You may come back again after 3 hours.";
+		set #arenaRoomDelay,gettimetick(2) + ( 180 * 60 );
+		#arenapointscount = 0;
+		warp "prontera",156,191;
+		set #allowarenaroom, 0;
+		end;
+	}
+		.@point = 4;
+		#arenapoints += .@point;
+		#arenapointscount += .@point;
+		dispbottom "Gained "+.@point+" Arena Points. You got "+F_InsertComma( #arenapoints )+" Arena Points now.";
+	end;
+}
+-	script	bow_main	-1,{
+   OnKill:
+	if ( (#arenapointscount >= 250) && (#arenaRoomDelay < gettimetick(2)) ){
+		dispbottom "You already reached 250 Arena Points. You may come back again after 3 hours.";
+		set #arenaRoomDelay,gettimetick(2) + ( 180 * 60 );
+		#arenapointscount = 0;
+		warp "prontera",156,191;
+		set #allowarenaroom, 0;
+		end;
+	}
+		.@point = 4;
+		#arenapoints += .@point;
+		#arenapointscount += .@point;
+		dispbottom "Gained "+.@point+" Arena Points. You got "+F_InsertComma( #arenapoints )+" Arena Points now.";
+	end;
+}
+-	script	ice_main	-1,{
+   OnKill:
+	if ( (#arenapointscount >= 250) && (#arenaRoomDelay < gettimetick(2)) ){
+		dispbottom "You already reached 250 Arena Points. You may come back again after 3 hours.";
+		set #arenaRoomDelay,gettimetick(2) + ( 180 * 60 );
+		#arenapointscount = 0;
+		warp "prontera",156,191;
+		set #allowarenaroom, 0;
+		end;
+	}
+		.@point = 4;
+		#arenapoints += .@point;
+		#arenapointscount += .@point;
+		dispbottom "Gained "+.@point+" Arena Points. You got "+F_InsertComma( #arenapoints )+" Arena Points now.";
+	end;
+}
+-	script	flower_main	-1,{
+   OnKill:
+	if ( (#arenapointscount >= 250) && (#arenaRoomDelay < gettimetick(2)) ){
+		dispbottom "You already reached 250 Arena Points. You may come back again after 3 hours.";
+		set #arenaRoomDelay,gettimetick(2) + ( 180 * 60 );
+		#arenapointscount = 0;
+		warp "prontera",156,191;
+		set #allowarenaroom, 0;
+		end;
+	}
+		.@point = 20;
+		#arenapoints += .@point;
+		#arenapointscount += .@point;
+		dispbottom "Gained "+.@point+" Arena Points. You got "+F_InsertComma( #arenapoints )+" Arena Points now.";
+	end;
+}
+
+
+bat_b02	mapflag	noloot
+bat_b02	mapflag	nomobloot
+bat_b02	mapflag	nomvploot
+bat_b02	mapflag	noexp
+bat_b02	mapflag	nobaseexp
+bat_b02	mapflag	nojobexp
+
+//===========================spawn monster========================
+bat_b02,0,0,0,0	monster	Arena Ifrit	1832,2,19800000,600000,"ifrit_main::OnKill"
+bat_b02,0,0,0,0	monster	Arena Valkyrie Randgris	1751,2,14400000,600000,"valk_main::OnKill"
+//bat_b02,0,0,0,0	monster	Arena Great Demon Baphomet	1929,2,19800000,600000,"bapho_main::OnKill"
+bat_b02,0,0,0,0	monster	Arena Ktullanux	1779,5,14400000,600000,"ktull_main::OnKill"
+bat_b02,0,0,0,0	monster	Arena Beelzebub	1873,2,19800000,600000,"beelze_main::OnKill"
+bat_b02,0,0,0,0	monster	Arena Sword Guardian	1949,30,180000,0,"sword_main::OnKill"
+bat_b02,0,0,0,0	monster	Arena Bow Guardian	1950,30,180000,0,"bow_main::OnKill"
+bat_b02,0,0,0,0	monster	Arena Ice Titan	1788,25,180000,0,"ice_main::OnKill"
+bat_b02,0,0,0,0	monster	Arena Blue Flower	1934,5,600000,0,"flower_main::OnKill"
+
+
+bat_b02,389,2,0	warp	retransfer	1,1,bat_b02,0,0
+bat_b02,17,290,0	warp	retransfer1	1,1,bat_b02,0,0

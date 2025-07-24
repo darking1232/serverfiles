@@ -1,0 +1,61 @@
+new_1-4,20,180,4	script	Freebies	832,{
+	mes "[^FF9900 ReviseRO Council ^000000]";
+	mes "Welcome to ReviseRO : Rebirth.";
+	mes "To venture into the whole new world,";
+	mes "Please visit the forum and read the rules of the game";
+	sleep2 2000;
+	next;
+	mes "[^FF9900 ReviseRO Council ^000000]";
+	mes "Do you want to receive the ReviseRO Freebies already?";
+	switch( select( "NO Thank you!","Yes please!")){
+case 1:
+	next;
+	mes "[^FF9900 ReviseRO Council ^000000]";
+	mes "Let me know when you are ready!";
+	close;
+	break;
+
+case 2:
+	next;
+	if ( NewbieGift > 0 ) goto Recieved;
+	getitembound 3253,1,Bound_Char;
+	getitembound 3254,1,Bound_Char;
+	getitembound 3255,1,Bound_Char;
+	getitembound 14545,1,Bound_Char;
+	getitembound 3120,3,Bound_Char;
+	getitembound 3121,3,Bound_Char;	
+	rentitem 3258,604800;
+	rentitem 3261,604800;
+	rentitem 3264,604800;
+	set NewbieGift, 1;	
+	warp "prontera",156,191;
+	savepoint "prontera",156,191;
+	sleep2 100;
+	mes "[^FF9900 ReviseRO Council ^000000]";
+	mes "Freebies are stored in a BOX and placed in your inventory already.";
+	mes "Note: Level 100 set will help you alot.";
+	if(!gepard_int_get("new_announce")){
+	gepard_int_set("new_announce",true);
+	announce strcharinfo(0) + " has just joined ReviseRO. Have Fun!.",bc_all,0x27C5F2;
+	}
+	//doevent "ReviseRoGuide::OnGuideReviseRO";
+	dispbottom "Type @guide if you need my help.";
+	sleep2 6000;
+	end;
+}
+	
+Recieved:
+	mes "[^FF9900 ReviseRO Council ^000000]";
+	mes "You already recieved a freebies.";
+	next;
+	warp "prontera",156,191;
+	savepoint "prontera",156,191;
+	//doevent "ReviseRoGuide::OnGuideReviseRO";
+	dispbottom "Type @guide if you need my help.";
+	close;
+OnInit:
+delwaitingroom;
+waitingroom "ReviseRO Freebies",0;
+end;
+
+}

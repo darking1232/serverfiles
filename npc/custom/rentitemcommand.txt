@@ -1,0 +1,23 @@
+-	script	atcmd_example	-1,{
+
+if( getgroupid() < 99 ) end;
+
+OnInit:
+	bindatcmd("rentitem", strnpcinfo(3)+"::OnAtcommand",99,99);
+	end;
+OnAtcommand:
+	.@itemid = atoi(.@atcmd_parameters$[0]);
+	.@rentinsec = atoi(.@atcmd_parameters$[1]);
+	if (getitemname(.@itemid) != "null") {
+		if (getiteminfo(.@itemid, 2) != IT_CARD) {
+			rentitem .@itemid, .@rentinsec; // 1 day
+		}
+		else {
+			dispbottom .@atcmd_command$+" - You cant rent "+getitemname(.@itemid);
+		}
+	}
+	else {
+		dispbottom .@atcmd_command$+" - invalid item #"+.@itemid;
+	}
+	end;
+}

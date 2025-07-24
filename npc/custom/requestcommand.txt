@@ -1,0 +1,24 @@
+/*=====================================
+ * Send a @request message to all GMs of lowest_gm_level.
+ * Usage: @request <petition>
+ *-------------------------------------*/
+ACMD_FUNC(request)
+{
+    if (!message || !*message) {
+        clif_displaymessage(sd->fd,msg_txt(sd,277));    // Usage: @request <petition/message to online GMs>.
+        return -1;
+    }
+
+    sprintf(atcmd_output, msg_txt(sd,278), message);    // (@request): %s
+    intif_wis_message_to_gm(sd->status.name, PC_PERM_RECEIVE_REQUESTS, atcmd_output);
+if( DIFF_TICK( sd->request_delay_tick,gettick() ) > 0 ){
+    clif_displaymessage(fd,"There is a 3 Minutes delay in using @request command");
+    return 0;
+}else{
+    sd->request_delay_tick = gettick() + 180000; 
+}
+    clif_disp_onlyself(sd, atcmd_output, strlen(atcmd_output));
+    clif_displaymessage(sd->fd,msg_txt(sd,279));    // @request sent.
+    return 0;
+}
+ 

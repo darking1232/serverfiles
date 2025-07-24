@@ -1,0 +1,105 @@
+//https://rathena.org/board/topic/86147-script-for-hourly-points-for-the-whole-account/
+//Use donpcevent "<NPC object name>::<event label>"; to invoke an event label. Disabled/enabled npc only disable/enable the npc (read the docs in script_commands) so the timer never start.
+prontera,154,181,6	script	Timer	876,{
+
+	sc_end SC_BERSERK;
+	sc_end SC_FREEZE; 
+	sc_start SC_BERSERK, 10000, 1;
+	sc_start SC_FREEZE, 10000, 1;
+	end;
+	function Time_Left;
+	
+			if (!a){
+			 mes "wala laman A"+ a;
+			
+			}
+			if (a){
+			mes "my laman A" + a;
+
+			}
+			if (b){
+			mes "my laman B" + b;
+
+			}
+			if (!b){
+			 mes "wala laman B" + b;
+
+			}
+			if ((Time_Left(a, (!b?gettimetick(2):b), (!c?.time_in_seconds:c)) != 0) && (Time_Left(a, (!b?gettimetick(2):b), (!c?.time_in_seconds:c)) != 60) ){
+				mes "Time Left: " +Time_Left(a, (!b?gettimetick(2):b), (!c?.time_in_seconds:c));
+			}
+
+	switch(select((a?"":"Initialization")+":"+(!a||b?"":"Stop")+":"+(!a||!b?"":"Resume")+":Settings")) {
+		case 1:
+			a = gettimetick(2); // start time
+			addtimer (Time_Left() * 1000), strnpcinfo(0) + "::OnTimeUp";
+			c = Time_Left();
+			break;
+		case 2:
+			b = gettimetick(2); // stop time
+			deltimer strnpcinfo(0) + "::OnTimeUp";
+			break;
+		case 3:
+			c -= b - a; // Resume
+			addtimer Time_Left((gettimetick(2) - (b - a)), gettimetick(2), c) * 1000, strnpcinfo(0) + "::OnTimeUp";
+			a = gettimetick(2);
+			b = 0;
+			break;
+		case 4:
+		default: break;
+	
+	}
+
+	close;
+		
+	OnTimeUp:
+		dispbottom "Done!";
+		a = 0;
+		b = 0;
+		c = 0;
+		end;
+		
+	OnPCLogoutEvent:
+		if (!a || b) end;
+		b = gettimetick(2);
+		deltimer strnpcinfo(0) + "::OnTimeUp";
+		end;
+		
+	OnPCLoginEvent:
+		if (!a || !b) end;
+		c -= b - a;
+		addtimer Time_Left((gettimetick(2) - (b - a)), gettimetick(2), c) * 1000, strnpcinfo(0) + "::OnTimeUp";
+		a = gettimetick(2);
+		b = 0;
+		end;
+		
+	OnCmd:
+		if (!a)
+			dispbottom "No timer set";
+		else 
+			dispbottom "Timer Left : " + Time_Left(a, (!b?gettimetick(2):b), (!c?.time_in_seconds:c));
+		end;
+		
+		
+	// start = start time 
+	// end = end time
+	// time limit = remaining time
+	function Time_Left {
+		.@start = getarg(0, 0);
+		.@end = getarg(1, gettimetick(2));
+		.@time_limit = getarg(2, .time_in_seconds);
+		return !.@start ? .time_in_seconds : (.@time_limit - (.@end - .@start));
+	}
+	
+	OnInit:
+		.time_limit = 1; // 3 minutes
+		.time_in_seconds = .time_limit * 60;
+		bindatcmd "timer", strnpcinfo(0) + "::OnCmd";
+		//uncomment below if you want timers to reset upon server restart / npc reload
+		addrid(0);
+		a = 0;
+		b = 0;
+		c = 0;
+		deltimer strnpcinfo(0) + "::OnTimeUp";
+		end;
+}

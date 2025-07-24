@@ -1,0 +1,4 @@
+-	script	Event_Bombring1	-1,{
+.start = false;
+end;
+}

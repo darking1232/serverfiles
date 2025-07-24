@@ -1,0 +1,61 @@
+prontera,162,184,4	script	Compensation NPC	4_F_KAFRA1,{
+//make sure to change the "#COMPE_APRIL202020"
+//make sure to change the accountID range.
+mes "[Compensation NPC]";
+mes "Due to Unexpected server maitenance.";
+mes "We would like to provide our compensation on the recent expected server up time delay. We apologies for what it caused. Thank you";
+sleep2 5000;
+next;
+		if (#COMPE_JUNE14 <= 0) {
+			mes "^FF0000[ Compensation NPC ]^000000";
+			mes "Compensation reward is character bound.";
+			mes "Compensation is strictly ^0000FF 1 per account ^000000.";
+			mes "Are you sure you want this character to receive the compensation reward?";
+			sleep2 3000;
+			if(select("Yes:No")==2) close;
+				next;
+					if (getcharid(3) > 2000525 ){
+							mes "^FF0000[ Compensation NPC ]^000000";
+							mes "It seems that this acccount has just been created. I cannot give you the compensation.";
+							end;
+					}
+					if( BaseJob==Job_Novice || BaseJob==Job_SuperNovice ) {
+							mes "^FF0000[ Compensation NPC ]^000000";
+							mes "Novice or Super Novice Job cannot claim the compensation.";
+							end;
+					}
+					if (((Weight*100)/MaxWeight) < 50) {
+							query_sql "SELECT `char_id`,`account_id`,`name` FROM `char` WHERE `account_id` = "+getcharid(3)+" AND `name` = '"+strcharinfo(0)+"'", .@char_id,.@account_id,.@name$;
+							//mes "Your account ID is "+.@account_id+" , Your char ID is "+.@char_id+" , Your Name is "+.@name$+"";
+							//end;
+							set #COMPE_JUNE14, 1;
+							getitembound 12412,1,Bound_Char; // HE bubble gum
+							//getitembound 12202,1,Bound_Char; //Steamed Tongue
+							//getitembound 12203,1,Bound_Char; //Steamed Scorpion
+							//getitembound 12204,1,Bound_Char; //Dragon Breath Cocktail
+							//getitembound 12205,1,Bound_Char; //Hwergelmir's Tonic
+							//getitembound 12206,1,Bound_Char; //Cooked Nine Tail's Tails 
+							//getitembound 12207,1,Bound_Char; //Stew Of Immortality
+							getitembound 3252,5,Bound_Char; //Level 200 All-in-One Buff Scroll
+							query_sql "INSERT INTO `compensation_reward` (`account_id`,`char_id`,`name`,`claim_time`) VALUES ("+.@account_id+",'"+.@char_id+"','"+.@name$+"',NOW())";
+							mes "^FF0000[ Compensation NPC ]^000000";
+							mes "You gained reward for the compensation.";
+							close;
+					}else {
+							mes "^FF0000[ Compensation NPC ]^000000";
+							mes "You're weight is more than 50%, Please remove some extra weight.";
+							close;
+					}
+
+		} else {
+				mes "^FF0000[ Compensation NPC ]^000000";
+				mes "You already received your compensation.";
+				close;
+		}
+	
+	end;
+OnInit:
+delwaitingroom;
+waitingroom "Compensation NPC",0;
+end;
+}

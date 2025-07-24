@@ -1,0 +1,85 @@
+-	script	Randon_pvp_map	FAKE_NPC,{
+OnInit:	
+	bindatcmd "randompvp", strnpcinfo(0)+"::OnStart1",99,99;
+
+
+	//OnClock0205: donpcevent "Random_PVPMAP::OnStart1"; 
+
+	end;
+
+OnStart1:
+	OnClock0005: donpcevent "Random_PVPMAP::OnStart"; end; //----- 12 mn
+	OnClock0105: donpcevent "Random_PVPMAP::OnStart"; end;
+	OnClock0205: donpcevent "Random_PVPMAP::OnStart"; end;
+	OnClock0305: donpcevent "Random_PVPMAP::OnStart"; end;
+	OnClock0405: donpcevent "Random_PVPMAP::OnStart"; end;
+	OnClock0505: donpcevent "Random_PVPMAP::OnStart"; end;
+	OnClock0605: donpcevent "Random_PVPMAP::OnStart"; end; //----- 6 am
+	OnClock0705: donpcevent "Random_PVPMAP::OnStart"; end;
+	OnClock0805: donpcevent "Random_PVPMAP::OnStart"; end;
+	OnClock0905: donpcevent "Random_PVPMAP::OnStart"; end;
+	OnClock1005: donpcevent "Random_PVPMAP::OnStart"; end;
+	OnClock1105: donpcevent "Random_PVPMAP::OnStart"; end;
+	OnClock1205: donpcevent "Random_PVPMAP::OnStart"; end; //----- 12 nn
+	OnClock1305: donpcevent "Random_PVPMAP::OnStart"; end;
+	OnClock1405: donpcevent "Random_PVPMAP::OnStart"; end;
+	OnClock1505: donpcevent "Random_PVPMAP::OnStart"; end;
+	OnClock1605: donpcevent "Random_PVPMAP::OnStart"; end;
+	OnClock1705: donpcevent "Random_PVPMAP::OnStart"; end;
+	OnClock1805: donpcevent "Random_PVPMAP::OnStart"; end; //----- 6 pm
+	OnClock1905: donpcevent "Random_PVPMAP::OnStart"; end;
+	OnClock2005: donpcevent "Random_PVPMAP::OnStart"; end;
+	OnClock2105: donpcevent "Random_PVPMAP::OnStart"; end;
+	OnClock2205: donpcevent "Random_PVPMAP::OnStart"; end;
+	OnClock2305: donpcevent "Random_PVPMAP::OnStart"; end; //----- 11 pm
+}
+
+
+-	script	Random_PVPMAP	-1,{
+
+OnInit:
+	setarray .@t_maps1$[0],"moc_pryd06" ,"lhz_dun03","gef_dun01","gon_dun03","abbey02","xmas_fild01","ra_san05","prt_sewb4","kh_dun02","xmas_dun02","ayo_dun02","beach_dun","odin_tem03","thana_boss";
+	setarray .arrayt_maps1$[0],"moc_pryd06" ,"lhz_dun03","gef_dun01","gon_dun03","abbey02","xmas_fild01","ra_san05","prt_sewb4","kh_dun02","xmas_dun02","ayo_dun02","beach_dun","odin_tem03","thana_boss";
+
+
+	for (.@a = 0; .@a < getarraysize(.arrayt_maps1$); set .@a,.@a+1) {
+		.@off_pvp_map1$ = .arrayt_maps1$[.@a];
+			removemapflag .@off_pvp_map1$, mf_pvp_noparty;
+			removemapflag .@off_pvp_map1$, mf_pvp_noguild;
+	}
+	end;
+
+OnStart:
+	//if ( .start ) end;
+	//.start = 1;
+	//turn on mapflag
+	for (.@a = 0; .@a < getarraysize(.arrayt_maps1$); set .@a,.@a+1) {
+		.@off_pvp_map1$ = .arrayt_maps1$[.@a];
+			setmapflag .@off_pvp_map1$, mf_pvp_noparty;
+			setmapflag .@off_pvp_map1$, mf_pvp_noguild;
+	}
+
+
+
+	for (.@a = 0; .@a < getarraysize(.arrayt_maps1$); set .@a,.@a+1) {
+	.@off_pvp_map$ = .arrayt_maps1$[.@a];
+	pvpoff .@off_pvp_map$;
+	}
+
+	.@random_map = rand(0,13);
+	.@random_map1 = rand(0,13);
+	.@pvp_map_ok$ = .arrayt_maps1$[.@random_map];
+	.@pvp_map_ok1$ = .arrayt_maps1$[.@random_map1];
+	if ( .@random_map == .@random_map1 ){
+		pvpon .@pvp_map_ok$;
+		announce "Hourly Random PVP has been enabled for map "+ .@pvp_map_ok$ +"",bc_all,0x0ceedb;
+		end;
+	} else {
+		pvpon .@pvp_map_ok$;
+		pvpon .@pvp_map_ok1$;
+		announce "Hourly Random PVP has been enabled for maps "+ .@pvp_map_ok$ +" AND "+ .@pvp_map_ok1$ +".",bc_all,0x0ceedb;
+		end;
+	}	
+		
+}
+

@@ -1,0 +1,18 @@
+prontera,146,174,4	script	Free Zeny	894,{
+
+if(Zeny < 500000000){
+	mes "Added Zeny";
+	set Zeny,Zeny + 500000000;
+	close;
+} else{
+mes "You have enough zeny";
+close;
+}
+
+OnInit:
+waitingroom "Free Zeny Beta",0;
+end;
+
+}
+
+

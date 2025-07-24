@@ -1,0 +1,49 @@
+prontera,163,182,4	script	Changelog	858,{
+	mes "^4000C0July 22 2020 Changelog^000000";
+	mes "Quick Maintenance was conducted Last July 22, 2020 @ 1PM that lasted for less than 30 minutes.";
+	mes "^FF0000--------------------------------------^000000";
+	mes "Increased normal card drop rate from 10% to 20%.";
+	mes "^FF0000--------------------------------------^000000";
+	mes "Bow & Sword guardian in the arena HP has been reduced to 40-50%.";
+	mes "^FF0000--------------------------------------^000000";
+	mes "Blue Flower in the arena HP has been reduced to 40-50%.";
+	mes "^FF0000--------------------------------------^000000";
+	mes "Removed Gold room hunt limit.";
+	mes "^FF0000--------------------------------------^000000";
+	mes "Removed Maximum of gold points amount to be converted to gold per transaction.";
+	mes "^FF0000--------------------------------------^000000";
+	mes "Endless tower Enabled.";
+	mes "^FF0000--------------------------------------^000000";
+	mes "Disabled Zeny Boy";
+	next;
+	mes "^4000C0July 24 2020 Changelog^000000";
+	mes "Quick Server Reboot was conducted Last July 24, 2020 @8AM.";
+	mes "^FF0000--------------------------------------^000000";
+	mes "PVP enabled in Gold Room";
+	mes "^FF0000--------------------------------------^000000";
+	mes "Reduced Golden Peco in gold room";
+	mes "^FF0000--------------------------------------^000000";
+	mes "All Gold Points will be removed if a user die inside the Gold Room.";
+	mes "^FF0000--------------------------------------^000000";
+	mes "Killing Golden Peco inside the gold room NOW guarantees 2 or 3 gold points";
+	mes "^FF0000--------------------------------------^000000";
+	mes "Reduced Golden Peco HP from 150,000 to 75,000.";
+	mes "^FF0000--------------------------------------^000000";
+	mes "Modified Golden Peco Stats.";
+	mes "^FF0000--------------------------------------^000000";
+	mes "Reduced Gold Room Guardian HP from 15,000,000 to 750,000";
+	mes "^FF0000--------------------------------------^000000";
+	mes "Changed Gold Room Guardian Property from Fire to Wind.";
+	mes "^FF0000--------------------------------------^000000";
+	mes "Dual Client has been disabled inside the Gold Room.";
+	mes "^FF0000--------------------------------------^000000";
+	mes "Invite your guild to personally gain Donation Items more than 3000 PHP of worth!(See FB page Post for details)";
+	mes "^FF0000--------------------------------------^000000";
+	mes "^4000C0 Invite all of your friends! ^000000";
+	close;
+
+OnInit:
+waitingroom "July 22 & 24 Patch Notes",0;
+end;
+
+}

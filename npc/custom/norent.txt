@@ -1,0 +1,7 @@
+-	script	antirent	-1,{
+
+bindatcmd( "rentitem",strnpcinfo(0)+"::Onrent",99,99 );
+	end;
+Onrent:
+	end;
+}

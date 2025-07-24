@@ -1,0 +1,93 @@
+prontera,144,229,5	script	Castle Drop Expert	61,{
+	mes "[^0000ffCastle Drop Expert^000000]";
+	mes "I'm Glemor, A Castle Drop Expert.";
+	mes "I can magically convert your unwanted treasure drops from your Castle Drop of choice.";
+	next;
+	mes "[^0000ffCastle Drop Expert^000000]";
+	mes "However, I got a pretty little fee.";
+	mes "It will cost you 900,000,000 million zeny per exchange.";
+	next;
+	mes "[^0000ffCastle Drop Expert^000000]";
+	mes "We should proceed then, Let me check your Zeny first.";
+	next;
+	mes "[^0000ffCastle Drop Expert^000000]";
+   	mes "I require "+ .req_zeny +" Zeny.";
+   	next;
+   if ( zeny < .req_zeny ) {
+	mes "[^0000ffCastle Drop Expert^000000]";
+       mes "you don't have enough zeny. Get lost.";
+       close;
+   }
+   getinventorylist;
+	mes "[^0000ffCastle Drop Expert^000000]";
+	mes "Please choose the castle drop you want to exchange.";
+   for ( .@i = 0; .@i < @inventorylist_count; .@i++ ) {
+       if ( compare( .itemidcompare$, ":"+ @inventorylist_id[.@i] +":" ) ) {
+           .@menu$ = .@menu$ + getitemname( @inventorylist_id[.@i] ) +":";
+           .@select[ .@c ] = @inventorylist_id[.@i];
+           .@c++;
+       }
+   }
+   if ( .@c == 0 ) {
+	mes "[^0000ffCastle Drop Expert^000000]";
+       mes "You don't have any castle drop from your inventory.";
+       close;
+   }
+   .@pickid = .@select[ select( .@menu$ ) -1 ];
+	next;
+	mes "[^0000ffCastle Drop Expert^000000]";
+   mes "Wise choice!. You've picked : "+ getitemname( .@pickid ) +". Are you sure about it?";
+	if ( select( "Confirm","Cancel" ) == 1 ) {
+   next;
+	mes "[^0000ffCastle Drop Expert^000000]";
+   mes "Please choose then what drop you would like to exchange with your "+ getitemname( .@pickid ) +".";
+   .@menu$ = getitemname( .itemid );
+   for ( .@i = 1; .@i < .itemidsize; .@i++ )
+       .@menu$ = .@menu$ +":"+ getitemname( .itemid[.@i] );
+   .@buyid = .itemid[ select( .@menu$ ) -1 ];
+	next;
+	mes "[^0000ffCastle Drop Expert^000000]";
+   mes "Are you sure you want to spend "+ .req_zeny +" zeny to";
+   mes "trade "+ getitemname( .@pickid ) +" into "+ getitemname( .@buyid ) +"?";
+   next;
+   if ( select ( "Yes", "No" ) == 2 ) close;
+   if ( countitem( .@pickid ) == 0 || zeny < .req_zeny ) {
+	mes "[^0000ffCastle Drop Expert^000000]";
+       mes "don't cheat by sending mail away !";
+       close;
+   }
+   if ( zeny < .req_zeny ) {
+	mes "[^0000ffCastle Drop Expert^000000]";
+       mes "you don't have enough zeny. Get lost.";
+       close;
+   }
+if (((Weight*100)/MaxWeight) < 75) {
+   delitem .@pickid, 1;
+   getitem .@buyid, 1;
+   zeny = zeny - .req_zeny;
+	mes "[^0000ffCastle Drop Expert^000000]";
+   mes "Traded successfully. Thank you and come again!";
+   close;
+}else{
+mes "[^0000ffCastle Drop Expert^000000]";
+mes "You're weight is more than 75%, Please remove some extra weight.";
+close;
+}
+}
+next;
+	mes "[^0000ffCastle Drop Expert^000000]";
+	mes "Come back anytime.";
+close;
+
+OnInit:
+   .req_zeny = 900000000; // zeny requirement
+   setarray .itemid, 7086, 7090, 7091, 7077, 7078, 7073, 7074, 7075, 7076, 7077, 7078, 7079, 7080, 7081, 7082, 7083, 7084, 7085, 7087, 7088, 7089, 7830, 7831, 7832, 7833, 7834, 7835, 7836, 7837, 7838, 7839; // put all your castle drops in this list
+
+   set .itemidsize, getarraysize( .itemid );
+   set .itemidcompare$, ":"+ .itemid[0];
+   for ( .@i = 1; .@i < .itemidsize; .@i++ )
+       .itemidcompare$ = .itemidcompare$ +":"+ .itemid[.@i] +":";
+delwaitingroom;
+waitingroom "Castle Drop Expert",0;
+   end;
+}

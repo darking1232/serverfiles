@@ -1,0 +1,190 @@
+// -------------------------------------------------------------------------------
+// 	Script Name : Headgear to Costume converter >> Costume to Headgear converter
+// -------------------------------------------------------------------------------
+// Description :
+// - Allows a user to convert the equipped headgear (on Top, Mid or Low) into a
+//   costume item. It will remove any card and refine of the Item.
+// - Allows a user to restore the equipped costume headgear (on Top, Mid or Low)
+//   into its original form. It will not return any card or refine of the item.
+// -------------------------------------------------------------------------------
+function	script	costume	{
+	.@npc_name$ = getarg(0);
+	disable_items;
+	mes "["+ .@npc_name$ +"]";
+	mes "Here you can convert your headgears into a Costume Headgear or restore to its Original form.";
+	next;
+	mes "I cannot convert Rental or bounded items into costume.";
+	next;
+	mes "I will require 1 Costume Ticket to transform an ordinary headgear into a costume.";
+	mes "";
+	mes "Restoring a costume back to it's original form will cost 30,000,000 Zeny.";
+	next;
+	switch(select("I want to convert.:I want to restore.:No thanks.")) {
+	case 1:
+		setarray .@indices[1], EQI_HEAD_TOP, EQI_HEAD_MID, EQI_HEAD_LOW;
+		for (.@i = 1; .@i<=3; ++.@i) {
+			if (getequipisequiped(.@indices[.@i])) {
+				.@menu$ = .@menu$ + F_getpositionname(.@indices[.@i]) + "-[" + getequipname(.@indices[.@i]) + "]";
+				.@equipped = 1;
+			}
+			.@menu$ = .@menu$ + ":";
+		}
+		if (.@equipped == 0) {
+			mes "["+ .@npc_name$ +"]";
+			mes "You need to wear headgears that I can costume...";
+			close;
+		}
+		if (countitem(50026) < 1){
+		mes "You do not have the Costume Ticket from your inventory.";
+		close;
+		}
+		mes "["+ .@npc_name$ +"]";
+		mes "Please select what to convert.";
+		mes "^FF0000 Take note: ^0000FF";
+		mes "^0B27F3 I cannot convert items that has a refine OR a card inserted. ^0000FF";
+		next;
+		.@part = .@indices[ select(.@menu$) ];
+		if (!getequipisequiped(.@part)) {
+			mes "["+ .@npc_name$ +"]";
+			mes "You're not wearing anything there...";
+			close;
+		}
+		getinventorylist;
+			for (.@i = 0; .@i < @inventorylist_count; .@i++) {
+			//	mes "test " + getequipid(EQI_HEAD_TOP) + " test";
+ //     if (@inventorylist_bound[.@i]) {
+ //          mes "you are wearing "+ @inventorylist_equip[.@i];
+//		mes "you are wearin1g "+   @inventorylist_id[.@i] ;
+//		mes "wew" + getequipid(.@part);
+//close;
+//          
+ //      }
+	
+				if (@inventorylist_expire[.@i]) {
+					if (@inventorylist_equip[.@i] > 0 && @inventorylist_id[.@i] == getequipid(.@part)){
+						mes "Your item ( ^FF0000"+ getitemname(getequipid(.@part)) + "^0000FF ) is rental. I cannot convert this item.";
+						mes "";
+					close;
+					}
+				}
+				if (@inventorylist_bound[.@i] ) {
+					if (@inventorylist_equip[.@i] > 0 && @inventorylist_id[.@i] == getequipid(.@part)){
+						mes "Your item ( ^FF0000"+ getitemname(getequipid(.@part)) + "^0000FF ) is bounded. I cannot convert this item";
+						mes"";
+					close;
+					}				
+				}
+			
+			}
+		if ( getequiprefinerycnt(.@part) >= 1 ) {
+			mes "["+ .@npc_name$ +"]";
+			mes "Your item (" + getitemname(getequipid(.@part)) + ") that you want to convert has a refine. I cannot convert this to costume.";
+			close;
+		}
+		set .@cardcount,getequipcardcnt(.@part);
+		if(.@cardcount > 0) {
+			mes "["+ .@npc_name$ +"]";
+			mes "Young one... There are card/s compounded on this item (" + getitemname(getequipid(.@part)) + "). I can do nothing with it, I'm afraid.";
+			close;
+		}
+		mes "["+ .@npc_name$ +"]";
+		mes "You want to Costume your " + getitemname(getequipid(.@part)) + "?";
+		next;
+
+		if (select("Yes, proceed:No, sorry.") == 2) {
+			mes "["+ .@npc_name$ + "]";
+			mes "Need some time to think about it, huh?";
+			mes "Alright, I can understand.";
+			close;
+		}
+
+		costume .@part; // Convert the Headgear
+		delitem 50026,1;
+		mes "["+ .@npc_name$ +"]";
+		mes "Done, enjoy your costume headgear.";
+		close;
+	case 2:
+		setarray .@indices[1], EQI_COSTUME_HEAD_TOP, EQI_COSTUME_HEAD_MID, EQI_COSTUME_HEAD_LOW;
+		for (.@i = 1; .@i<=3; ++.@i) {
+			if (getequipisequiped(.@indices[.@i])) {
+				.@menu$ = .@menu$ + F_getpositionname(.@indices$[.@i]) + "-[" + getequipname(.@indices[.@i]) + "]";
+				.@equipped = 1;
+			}
+			.@menu$ = .@menu$ + ":";
+		}
+
+		if (.@equipped == 0) {
+			mes "["+ .@npc_name$ +"]";
+			mes "You need to wear costumed headgears that I can restore...";
+			close;
+		}
+
+		mes "["+ .@npc_name$ +"]";
+		mes "Please select what to restore.";
+		mes "Remember, I will only restore it back without refine and cards.";
+		mes "I also need 30,000,000 Zeny to restore.";
+		next;
+
+		.@part = .@indices[ select(.@menu$) ];
+		if (!getequipisequiped(.@part)) {
+			mes "["+ .@npc_name$ +"]";
+			mes "You're not wearing anything there...";
+			close;
+		}
+		if (Zeny < 30000000) {
+		mes " You do not have enough Zeny. I require 30,000,000 Zeny to use my service.";
+		close;
+		}
+		if (isequippedcnt(getequipid(.@part)) > 1) {
+			mes "["+ .@npc_name$ +"]";
+			mes "You're wearing too many of the same headgear!";
+			mes "How am I supposed to know which one to restore?";
+			mes "See me when you have one equipped.";
+			close;
+		}
+
+		if (countitem(getequipid(.@part)) > 1) {
+			mes "["+ .@npc_name$ +"]";
+			mes "You have another " + getitemname(getequipid(.@part)) + " with you.";
+			mes "Put it away before restoring.";
+			close;
+		}
+
+		mes "[" + .@npc_name$ + "]";
+		mes "You want to restore your " + getitemname(getequipid(.@part)) + "?";
+		next;
+
+		if (select("Yes, proceed:No, sorry.") == 2) {
+			mes "["+ .@npc_name$ +"]";
+			mes "Need some time to think about it, huh?";
+			mes "Alright, I can understand.";
+			close;
+		}
+
+		// Restore headgear by recreating
+		a = getequipid(.@part);
+		delitem a,1;
+		getitem a,1;
+		set Zeny, Zeny-30000000;
+		mes "["+ .@npc_name$ +"]";
+		mes "Done, enjoy your restored headgear.";
+		close;
+	case 3:
+		mes "["+ .@npc_name$ +"]";
+		mes "Very well. Return at once if you seek my services.";
+		close;
+	}
+}
+
+// ---------------------------------------------------------------------------
+// Add more lines to put your npc on different cities (adjust name if desired)
+// ---------------------------------------------------------------------------
+prontera,167,230,4	script	Costume Clown#1	715,{ 
+callfunc "costume","Costume Clown",0; 
+
+OnInit:
+waitingroom "Costume ITEM NPC",0;
+
+end; 
+}
+

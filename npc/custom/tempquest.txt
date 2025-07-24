@@ -1,0 +1,78 @@
+turbo_room,129,134,4	script	Temp Headgear Quest	109,{
+	mes "[Temp Quest Shop]";
+	mes "Hi there i can make some items for you come check it";
+	next;
+	mes "[Temp Quest Shop]";
+	mes "This items are highly rare and not easy to find";
+	next;
+	menu "Create",Q1,"Cancel",Q3;
+Q1:
+	mes "[Temp Quest Shop]";
+	mes "What hat do you want me to make?";
+	next;
+	menu "Black Cat Ears",Q1_19,"Icarus Wings",Q1_20;
+Q1_19:
+	mes "[Temp Quest Shop]";
+	mes "I need the following Items.";
+	mes "10,000,000 Zeny";
+	mes "1x Kitty Band [ITEM ID 2213]";
+	mes "1x Black Dyestuff [ITEM ID 983]";
+	mes "400x Fluff [ITEM ID 914]";
+	mes "";
+	next;
+	if(countitem(2213) < 1 || countitem(983) < 1 || countitem(914) < 400 || Zeny < 10000000) goto Q3;
+	delitem 2213,1;
+	delitem 983,1;
+	delitem 914,400;
+	set Zeny , Zeny - 10000000;
+	mes "[Temp Quest Shop]";
+	mes "Wow!! Well done! Finally you have gathered all items needed! We will make the Black Cat Ears for you right away. Please Wait a Moment.";
+   	next;
+	mes "[Temp Quest Shop]";
+	mes "Tah Dah! ^FF0000Black Cat Ears^000000...! Please Take it!";
+	getitem 5057,1;//Items: Baseball Cap
+	announce strcharinfo(0)+" has created 1x "+getitemname(5057)+"!",0,0xE06666;
+	next;
+	mes "[Temp Quest Shop]";
+	mes "I liked that, I look forward to making more. Thank you.";
+	close;
+
+Q1_20:
+	mes "[Temp Quest Shop]";
+	mes "I need the following Items.";
+	mes "100,000,000 Zeny";
+	mes "1x Black Butterfly Wings [ITEM ID 50002]";
+	mes "1x White Butterfly Wings [ITEM ID 50009]";
+	mes "100x Orange DyeStuff [ITEM ID 980]";
+	mes "200x Red Gemstone [ITEM ID 716]";
+	mes "200x Yellow Gemstone [ITEM ID 715]";
+	mes "200x Gold [ITEM ID 969]";
+	mes "10x Garnet [ITEM ID 718]";
+	next;
+	if(countitem(50002) < 1 || countitem(50009) < 1 || countitem(980) < 100 || countitem(716) < 200 || countitem(715) < 200 || countitem(969) < 200 || countitem(718) < 10 || Zeny < 100000000) goto Q3;
+	delitem 50002,1;
+	delitem 50009,1;
+	delitem 980,100;
+	delitem 716,200;
+	delitem 715,200;
+	delitem 969,200;
+	delitem 718,10;
+	set Zeny , Zeny - 100000000;
+	mes "[Temp Quest Shop]";
+	mes "Wow!! Well done! Finally you have gathered all items needed! We will make the Icarus Wings! for you right away. Please Wait a Moment.";
+   	next;
+	mes "[Temp Quest Shop]";
+	mes "Tah Dah! ^FF0000Icarus Wings^000000...! Please Take it!";
+	getitem 50006,1;//Items: Baseball Cap
+	announce strcharinfo(0)+" has created 1x "+getitemname(50006)+"!",0,0xE06666;
+	next;
+	mes "[Temp Quest Shop]";
+	mes "I liked that, I look forward to making more. Thank you.";
+	close;
+
+
+Q3:
+	mes "[Temp Quest Shop]";
+	mes "Stop by some other time with the right materials, so I can make the hats for you.";
+	close;
+}

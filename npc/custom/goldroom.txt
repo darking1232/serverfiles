@@ -1,0 +1,293 @@
+prontera,163,152,4	script	Gold Room#goldroom	1324,{
+   if(getcharid(1))
+   {
+       mes "[^0055FF ::: Gold Room ::: ^000000]";
+       mes "Please leave your party before entering the holy land.";
+       close;
+   }
+    doevent "gold_room_main::OnTalk";
+
+}
+-	script	nomobattack	-1,{
+OnInit:
+setcell "ordeal_3-2",146,146,161,161,cell_basilica,1;
+end;
+}
+// warp portal back prontera
+ordeal_3-2,158,158,4	script	Gold Room#goldroom2	46,{
+	mes "What do you want from me?";
+	next;
+		        switch ( select( "Exit Gold room","I want to be rich!")) {
+				case 1:
+					mes "[^0055FF ::: Gold Room ::: ^000000]";
+					mes "I can see that you are rich now.";
+					mes "Warping you to the real world....";
+					mes "Bye for now......";
+					next;
+                			warp "prontera",156,191; 
+					set #ALLOWGOLD, 0;             			
+					break;
+				case 2:
+					mes "[^0055FF ::: Gold Room ::: ^000000]";
+					mes "So you want to be the rich among the riches.";
+					close;
+			}
+			end;
+}
+
+
+
+-	script	gold_room_main	-1,{
+   
+    OnInit:
+	setcell "ordeal_3-2",146,146,161,161,cell_basilica,1;
+        // gold room map
+        .map$ = "ordeal_3-2";
+        // entrance fee
+        .zeny_cost = 250000;
+        // rate to get gold
+        .rate = 30;
+        // gold random amount
+        setarray .gold_amount,2,4,6; 
+
+        setmapflag .Map$,mf_nogo;
+        setmapflag .map$,mf_nobranch;
+        setmapflag .map$,mf_nosave;
+        setmapflag .map$,mf_nomemo;
+        setmapflag .map$,mf_noreturn;
+        setmapflag .map$,mf_nowarp;
+        setmapflag .map$,mf_nowarpto;
+        setmapflag .map$,mf_noskill;
+        setmapflag .Map$,mf_noloot;
+	setmapflag .Map$,mf_noloot;
+	setmapflag .Map$,mf_novending;
+	setmapflag .Map$,mf_nochat;
+	setmapflag .Map$,mf_nodrop;
+	setmapflag .Map$,mf_noexp;
+	setmapflag .Map$,mf_notrade;
+	setmapflag .Map$,mf_nocommand,60;
+        end;
+   
+    OnTalk:
+	mes "[^0055FF ::: Gold Room ::: ^000000]";
+	mes "What can I do for you today?";
+	next;
+        switch ( select( 
+            "Enter Gold Room",
+            "Exchange Gold Point",
+	    "Check Points",
+            "Cancel"
+        )) {
+            case 1:
+    		next;
+			mes "[^0055FF ::: Gold Room ::: ^000000]";
+       			mes "Whats up, Low Class People! I know you want to become rich!";
+        		mes "Well I have a place where you can find a very rare Birds.";
+        		mes "And if you kill those birds you will gain a random amount of GOLD";
+        		mes "Points or GP and you can ^FF0000TRADE^000000 it into real GOLD!";
+    		next;
+			mes "[^0055FF ::: Gold Room ::: ^000000]";
+       		 	mes "But there is something you should know...";
+        		mes "There are guardians that lurking around the map and they are strong!!!";
+       			mes "^FF0000All of your points will lose when you die!^000000 ";
+        		mes "No using of skills inside the gold room.";
+			sleep2 3000;
+    		next;
+			mes "[^0055FF ::: Gold Room ::: ^000000]";
+        		mes "Peco Gold is a Demon type monster";
+        		mes "Be sure to equip the right items to not make your attack miss.";
+        		mes "type @mi 3502 for more information";
+			sleep2 3000;
+		next;
+
+	mes "[^0055FF: Bot Checker:^000000]";
+	mes "Before we proceed. I need you to undergo Anti Bot Testing.";
+	mes "Do you still wish to proceed?";
+	if(select("Yes","No")==2){ end; }
+		next;
+		set botternpc, 1;
+		query_sql "SELECT `account_id`,`name` FROM `char` WHERE `name` = '"+(strcharinfo(0))+"'", .@account_id,.@name$;
+		getmapxy( .@mapname$, .@mapx, .@mapy, BL_PC );
+		function GetString;
+		for(set botternpc,botternpc; botternpc < 4; set botternpc,botternpc++){
+			set .@Stringg$,GetString( 15,rand(5,10) );
+			mes "You Have 3 Chance to Type the Red Text Correctly";
+			mes "Attempt Number: " +botternpc;
+			mes "If you failed- You will be jailed";
+			mes "Input the ^FF0000RED COLOUR^000000 part";
+			mes "^0000FF"+GetString( 15,rand(5,10) )+"^FF0000"+.@Stringg$+"^0000FF"+GetString( 15,rand(3,10) )+"^000000";
+			input .@Input$;
+			if( .@Input$ != .@Stringg$ ){
+				if (botternpc >= 3) {
+					sleep2 1000;
+					atcommand "@jailfor 24h "+strcharinfo(0)+"";
+					announce "[Anti-BOT]: The user [" +strcharinfo(0) +"] Has Been Jailed For 24 Hours.",0,0xe80f0f;
+					set botternpc, 0;
+					query_sql "INSERT INTO `a_jail_log` (`account_id`,`name`,`time`,`required_input`,`user_input`,`player_location`,`x`,`y`) VALUES ("+.@account_id+",'"+.@name$+"',NOW(),'"+.@Stringg$+"','"+.@Input$+"','"+.@mapname$+"',"+.@mapx+","+.@mapy+")";
+					end;
+				}
+				mes "Wrong..Please Enter again..";
+				set botternpc, botternpc + 1;
+				next;
+			} else {
+				break;
+			}
+		}
+		function	GetString	{
+			if( getarg(0) & 1 ) setarray .@List$[ getarraysize( .@List$ ) ],"1","2","3","4","5","6","7","8","9";
+			if( getarg(0) & 2 ) setarray .@List$[ getarraysize( .@List$ ) ],"A","B","C","D","E","F","G","H","J","K","L","M","N","P","Q","R","S","T","U","X","Y","Z";
+			if( getarg(0) & 4 ) setarray .@List$[ getarraysize( .@List$ ) ],"a","b","c","d","e","f","g","h","i","j","m","p","q","r","s","t","u","x","y","z";
+			//if( getarg(0) & 8 ) setarray .@List$[ getarraysize( .@List$ ) ],"!","@","#","$","%","^","&","*","(",")","-","=","/","+";
+	
+		set .@Str$,"";
+			while( getstrlen( .@Str$ ) < getarg(1) )
+			set .@Str$,.@Str$ + .@List$[ rand( getarraysize( .@List$ ) ) ];
+			return .@Str$;
+		}
+		next;
+		mes "[^0055FF ::: Gold Room ::: ^000000]";
+        	mes "Congratulations, You passed the Anti Bot Testing.";
+		set botternpc, 0;
+		next;
+		mes "[^0055FF ::: Gold Room ::: ^000000]";
+        	mes "I need";
+        		if ( .zeny_cost ) 
+            			mes F_InsertComma( .zeny_cost ) + " Zeny, So I will be able to bring you into the sacred place.";
+		next;
+		        switch ( select( "Here, I got your zeny","Nevermind.")) {
+				case 1:
+                			if ( Zeny < .zeny_cost ) {
+						mes "[^0055FF ::: Gold Room ::: ^000000]";
+                    				mes "You need to pay " + .zeny_cost + " zeny. ";
+						close;
+                			} 
+					else
+					{
+                   			 	Zeny -= .zeny_cost;
+						sc_end sc_all;
+						set #ALLOWGOLD, 1;
+                    				warp .map$,153,153;
+						end;
+               				}
+                			break;
+					
+				case 2:
+					mes "[^0055FF ::: Gold Room ::: ^000000]";
+					mes "Okay, If you ever think of being rich, talk to me again.";
+					break;
+			}
+			end;
+            case 2:    
+		if (#GOLDPOINTS <= 0){
+			 mes "[^0055FF ::: Gold Room ::: ^000000]";
+			mes "You do not have the GOLDPOINTS I need. Come back next time.";
+			close;
+		}
+		 mes "[^0055FF ::: Gold Room ::: ^000000]";
+                mes "You got "+F_InsertComma( #GOLDPOINTS )+" Gold Points";
+                input @valueg;
+		if  ( @valueg == 0 ){
+			mes "[^0055FF ::: Gold Room ::: ^000000]";
+			mes "It seems you entered incorrect amount, Please try again.";
+			close;
+		}
+		if ( #GOLDPOINTS < @valueg ){
+			mes "It appears that you entered incorrect amount.";
+			end;
+		}
+
+		if( checkweight( 969,@valueg )){
+                    #GOLDPOINTS -= @valueg;
+                    getitem 969,@valueg;
+                    mes "Gained "+@valueg+" Gold.";
+		    mes "You now have "+F_InsertComma( #GOLDPOINTS )+" Gold Points";
+		close;
+                }
+                else {
+			mes "[^0055FF ::: Gold Room ::: ^000000]";
+                    	mes "You cant carry this much.";
+			mes "Or It seems you entered incorrect amount, Please try again.";
+			close;
+                }
+	    case 3:
+		mes "[^0055FF ::: Gold Room ::: ^000000]";
+		mes "You got "+F_InsertComma( #GOLDPOINTS )+" Gold Points";
+		close;
+            default:
+                break;
+        }
+        end;
+        
+    OnKill:
+       // if ( .rate < rand( 100 ) ) {
+		.@point = rand( .gold_amount[1],.gold_amount[2] );
+		#GOLDPOINTS += .@point;
+		dispbottom "Gained "+.@point+" Gold Points. You got "+F_InsertComma( #GOLDPOINTS )+" Gold Points now.";
+        //}
+        end;
+ 
+    OnPCDieEvent:
+        .@killerrid = killerrid;
+        if (strcharinfo(3) == .map$ && .@killerrid != getcharid(3)) {
+		if ( #GOLDPOINTS >= 5){
+			set #GOLDPOINTS, 0;
+			//set #GOLDPOINTS, #GOLDPOINTS - ((50 * #GOLDPOINTS) / 100);
+            		//dispbottom "You died, you lost 50% of your Gold points. Your Gold points now is " +#GOLDPOINTS;
+			dispbottom "You died, you lost All of your Gold points. Your Gold points now is " +#GOLDPOINTS;
+			set #ALLOWGOLD, 0;
+			warp "prontera",156,191;
+			end;
+		}
+            	dispbottom "You died, No deduction on your gold points. Your Gold points is " +#GOLDPOINTS;
+		warp "prontera",156,191;
+        }
+        end;
+
+OnPCLoginEvent:
+set #ALLOWGOLD, 0;
+end;
+
+OnPCLogoutEvent:
+set #ALLOWGOLD, 0;
+end;
+
+OnPCLoadMapEvent:
+	if ( #ALLOWGOLD == 0 && strcharinfo(3) == "ordeal_3-2"){
+		dispbottom "It appears you did not talk to our gold room NPC. Warping you back to prontera.";
+		warp "prontera",156,191;
+		end;
+	}
+
+	if (strcharinfo(3) == "ordeal_3-2"){
+		getmapxy( .@pvpmap1$, .@mapx, .@mapy, BL_PC );
+		query_sql("SELECT last_ip FROM `login` WHERE account_id = "+getcharid(3)+"", .@UltimaIp$);
+		query_sql("SELECT last_unique_id FROM `login` WHERE account_id = "+getcharid(3)+"", .@UniqueId$);
+		query_sql("SELECT account_id FROM `login` WHERE last_unique_id = '"+.@UniqueId$+"'", .@CuentaId);
+		set .@error,getcharid(3,strcharinfo(0));
+		for(set .@i ,0;.@i<getarraysize(.@CuentaId);set .@i,.@i+1) {
+			if(attachrid(.@CuentaId[.@i])) {
+				if (.@UniqueId$ == "2843194742") {
+				//if (.@UltimaIp$ == "49.146.236.84") {
+					set .@j,0;
+				} else {
+					getmapxy(.@map2$,.@mapx2,.@mapy2,BL_PC );
+					if (.@map2$ == .@pvpmap1$){
+						set .@j,.@j+1;
+					}
+				}
+			}	
+		}
+		detachrid;
+	
+	attachrid .@error;
+	if(.@j > 1) {
+		dispbottom "1 PC or LAPTOP per account only in Gold room.";
+		//mapannounce "coliseum", ""+strcharinfo(0)+" has been warped back to prontera. REASON: dual client user.",0;
+		//query_sql "INSERT INTO `gpack_map_check` (`account_id`,`char_name`,`gepard_unique_id`,`last_ip`) VALUES ("+.@CuentaId+",'"+strcharinfo(0)+"','"+.@UniqueId$+"','"+.@UltimaIp$+"')";
+		warp "prontera",156,183;
+	}
+	}
+	end;
+	}
+
+ordeal_3-2	mapflag	loadevent

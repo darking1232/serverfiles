@@ -1,0 +1,479 @@
+//===== rAthena Script =======================================
+//= Rune War - (from Ragnarok Event v2)
+//===============  by: =============================
+//= pajodex
+//===== Current Version: =====================================
+//= 1.0
+//===== Compatible With: =====================================
+//= rAthena Project (pajodex)
+//===== Description: =========================================
+/*
+Rune War (from Ragnarok Event v2)
+		
+	Battleground script that runs OnClockxxxx time on server.
+An npc will appear at prontera for registration. After some time
+RegistrationNPC will disappear. All registered players will
+be divided into 2 teams.
+
+	Players have to eliminate the enemy to gain points. Team
+with the most points accumulated wins.
+
+	A rune will be spawned at the center of the map. Runes similar
+to Dota 2.
+
+	* disclaimer * this runs like the War Over Rune but it is
+my own version. Since this is free, i did not add any special
+features. 
+
+ 
+	Enjoy!
+
+*/
+//=====******** Note ********=================================
+//= if you find bugs or problem, please do tell DM me at
+//= Discord (pajodex#1328) or rAthena (pajodex) 
+//= open for suggestions
+//===== Additional Comments: =================================
+/* 	
+	1.0 - Initial release
+*/
+//=============================================================
+
+function	script	F_ShuffleNumbers	{
+	deletearray getarg(2);
+	.@static = getarg(0);
+	.@range = getarg(1) +1 - .@static;
+	.@count = getarg(3, .@range);
+	if (.@range <= 0 || .@count <= 0)
+		return 0;
+	if (.@count > .@range)
+		.@count = .@range;
+	for (.@i = 0; .@i < .@range; ++.@i)
+		.@temparray[.@i] = .@i;
+	for (.@i = 0; .@i < .@count; ++.@i) {
+		.@rand = rand(.@range);
+		set getelementofarray( getarg(2), .@i ), .@temparray[.@rand] + .@static;
+		.@temparray[.@rand] = .@temparray[--.@range];
+	}
+	return .@count;
+}
+
+prt_are01,150,150,0	script	Rune#11	100,1,1,{
+end;
+
+OnStart:
+	.rune = rand(1,5);
+	if(!checkre(0))
+		setnpcdisplay strnpcinfo(3), .npc_view_re[.rune];
+	else
+		setnpcdisplay strnpcinfo(3), .npc_view_pre[.rune];
+	end;
+
+OnTouch:
+	if( getvariableofnpc( .start, "runewar#main" ) == 1 ) {
+		if(!.getrune) {
+			if(.rune == 1) {
+				skill "AS_CLOAKING",10,1;
+				sc_start SC_CLOAKING, (.duration * 1000), 10;
+				specialeffect2 120;
+			}
+			if(.rune == 2) {
+				sc_start SC_SPEEDUP0,(.duration * 1000),25;
+				specialeffect2 507;
+			}
+			if(.rune == 3) {
+				sc_start SC_INCATKRATE,(.duration * 1000), 100; 
+				sc_start SC_INCMATKRATE,(.duration * 1000), 100;
+				specialeffect2 220;
+			}
+			if(.rune == 4) {
+				getmapxy( .@map$,.@x,.@y,0,strcharinfo(0) );
+				clone .@map$,.@X,.@y,"",getcharid(0),getcharid(0),"",1,.duration;
+				clone .@map$,.@X,.@y,"",getcharid(0),getcharid(0),"",1,.duration;
+				specialeffect2 65;
+			}
+			if(.rune == 5) {
+				sc_start4 SC_REGENERATION,(.duration * 1000),-10,1,0,0;
+				percentheal 10, 0;
+				specialeffect2 EF_HEAL;
+			}
+			mapannounce strnpcinfo(4), strcharinfo(0)+ " has picked up ["+.Rune$[.rune]+"] rune.", bc_blue;
+			setnpcdisplay strnpcinfo(3), HIDDEN_WARP_NPC;
+			.getrune = 1;
+			attachnpctimer;
+			initnpctimer;
+		}
+	}
+	end;
+	
+OnTimer6000:
+	sc_end SC_CLOAKING;
+	sc_end SC_REGENERATION;
+	end;
+	
+OnTimer60000:
+	.countTimer++;
+	if(.countTimer == .respawn_time) {
+		stopnpctimer;
+		detachnpctimer;
+		.rune = rand(1,5);
+		.countTimer = .getrune = 0;
+		if(!checkre(0))
+			setnpcdisplay strnpcinfo(3), .npc_view_re[.rune];
+		else
+			setnpcdisplay strnpcinfo(3), .npc_view_pre[.rune];
+	}
+	setnpctimer 0;	
+	end;
+	
+OnInit:
+	// =============
+	// Rune Settings
+	// =============
+	
+	// Rune names (in-order)
+	setarray .Rune$[1], 
+		"Invisibility", 
+		"Haste",
+		"Double Damage",
+		"Illusion",
+		"Regeneration";
+	
+	// NPC View ID if server in renewal mode
+	setarray .npc_view_re[1], 
+		2450, 
+		2696,
+		2697,
+		2702,
+		2703;
+	
+	// NPC View ID if server in pre-renewal mode	
+	setarray .npc_view_pre[1], 
+		1120, 
+		1096,
+		1582,
+		1388,
+		1031;
+		
+	// Rune effect duration (seconds)
+	.duration = 20; 
+	
+	// Respawn time of rune after being pick-ed up (minutes)
+	.respawn_time = 1; 
+	
+	// disable npc on start of server
+	disablenpc "Rune#11";
+	end;
+}
+
+prt_are01,0,0,0	script	runewar#main	100,{
+OnInit:
+	// =============
+	// Game Settings
+	// =============
+	
+	// How many players to start?
+	// default = 4 (2v2)
+	.minplayers = 4;
+	
+	// How long, in mins, for players to register_time
+	// default = 3 mins
+	.register_time = 2;
+	
+	// How many mins before rune is spawned
+	// default : 1 min
+	.runespawn = 1;
+	
+	// Event duration in minutes..
+	// default : 10 mins
+	.duration = 10; 
+	
+	// Reward settings
+	setarray .rwd[0],
+		50053, 8,	// win team reward
+		50053, 4;		// lose team reward
+	
+	disablenpc "rwr";
+	setwall strnpcinfo(4), 210, 151, 4, 4, 0, "RWarWall#1";
+	setwall strnpcinfo(4), 89, 151, 4, 4, 0, "RWarWall#2";
+	//setwall strnpcinfo(4), 197, 100, 4, 4, 0, "RWarWall#3";
+
+	setwall strnpcinfo(4), 151, 88, 4, 4, 0, "RWarWall#4";
+	setwall strnpcinfo(4), 150, 88, 4, 4, 0, "RWarWall#14";
+	setwall strnpcinfo(4), 149, 88, 4, 4, 0, "RWarWall#15";
+	setwall strnpcinfo(4), 148, 88, 4, 4, 0, "RWarWall#16";
+
+	setwall strnpcinfo(4), 104, 102, 4, 4, 0, "RWarWall#5";
+	setwall strnpcinfo(4), 103, 103, 4, 4, 0, "RWarWall#17";
+	setwall strnpcinfo(4), 102, 104, 4, 4, 0, "RWarWall#18";
+
+
+	setwall strnpcinfo(4), 102, 199, 4, 4, 0, "RWarWall#6";
+	setwall strnpcinfo(4), 148, 211, 4, 4, 0, "RWarWall#19";
+	setwall strnpcinfo(4), 149, 210, 4, 4, 0, "RWarWall#20";
+	setwall strnpcinfo(4), 150, 210, 4, 4, 0, "RWarWall#21";
+	setwall strnpcinfo(4), 151, 210, 4, 4, 0, "RWarWall#7";
+
+	setwall strnpcinfo(4), 195, 197, 4, 4, 0, "RWarWall#8";
+	setwall strnpcinfo(4), 196, 196, 4, 4, 0, "RWarWall#9";
+	setwall strnpcinfo(4), 197, 195, 4, 4, 0, "RWarWall#10";
+
+	setwall strnpcinfo(4), 197, 104, 4, 4, 0, "RWarWall#11";
+	setwall strnpcinfo(4), 196, 103, 4, 4, 0, "RWarWall#12";
+	setwall strnpcinfo(4), 195, 102, 4, 4, 0, "RWarWall#13";
+	bindatcmd "startrune",strnpcinfo(3)+"::OnAtCmd",99,99;
+	end;
+	
+// OnClock timers
+OnMon1030://10:30am
+OnMon1630://4:30pm
+OnMon2230://10:30pm
+OnMon0230://10:30pm
+OnMon0530://10:30pm
+OnTue1030://8pm
+OnTue1630://8pm
+OnTue2230://8pm
+OnTue0230://10:30pm
+OnTue0530://10:30pm
+OnThu1030://9pm
+OnThu1630://9pm
+OnThu2230://9pm
+OnThu0230://10:30pm
+OnThu0530://10:30pm
+OnFri1030://9pm
+OnFri1630://9pm
+OnFri2230://9pm
+OnFri0230://10:30pm
+OnFri0530://10:30pm
+OnWed0230://10:30pm
+OnWed0530://10:30pm
+OnWed0930:
+OnWed1730:
+OnSat0230://10:30pm
+OnSat0530://10:30pm
+OnSat1130:
+OnSat1930:
+OnSun0230://10:30pm
+OnSun0530://10:30pm
+OnSun1030:
+OnSun1830:
+OnAtCmd:
+	if( .start == 1 ) end;
+	announce "[ BattleGround ] : Registration will start in 10 Seconds.",0;
+	sleep 10000;
+	announce "[ BattleGround ] : Registration will start in 5 Seconds.",0;
+	sleep 5000;
+	announce "[ BattleGround ] : You may now proceed to prontera if you want to join.",0;
+	enablenpc "rwr";
+	announce "[ BattleGround ] : Registration ends in "+ .register_time +" mins.",0;
+	sleep .register_time * 60000;
+	announce "[ BattleGround ] : Registration ends in 1 minute.",0;
+	sleep 60000;
+	if( getvariableofnpc(.size, "rwr") < .minplayers ) {
+		announce "[ BattleGround ] : Too few players registered.",0;
+		sleep 5000;
+		announce "[ BattleGround ] : Terminating event.",0;
+		.redpoints = .bluepoints = .start = 0;
+		disablenpc "rwr";
+		end;
+	}
+	else
+	announce "[ BattleGround ] : Registration has ended.",0;
+	sleep 2000;
+		donpcevent "rwr::OnStart";
+	announce "[ BattleGround ] : BattleGround will start in a few moment.",0;
+	end;
+	
+OnStart:
+	.start = 1;
+	sleep 5000;
+	disablenpc "rwr";
+	.red = bg_create ( strnpcinfo(4), 251, 149, strnpcinfo(0)+"::OnRedQuit", strnpcinfo(0)+"::OnRedDie" );
+	.blue =  bg_create ( strnpcinfo(4), 47, 149, strnpcinfo(0)+"::OnBlueQuit", strnpcinfo(0)+"::OnBlueDie" ); 
+	callfunc "F_ShuffleNumbers", 0, getarraysize(.aid_)-1, .@r;
+	for ( .@i = 0; .@i < getarraysize(.aid_); ++.@i ) {
+		attachrid .aid_[.@r[.@i]];
+		bg_join ( .@i % 2 )? .red : .blue;
+	}
+	detachrid;
+	sleep 1000;
+	announce "Kill as much enemy as you can to earn points.", bc_npc | bc_map | bc_blue;
+	sleep 1000;
+	announce "Team who gains most points until event ends wins 200 battle points. The Losing team will receive 100 Battle Points.", bc_npc | bc_map | bc_blue;
+	sleep 1000;
+	announce "However, Team who reaches 98 Kill points first will automatically win!.", bc_npc | bc_map | bc_blue;
+	sleep 1000;		
+	announce "BattleGround will end in " + .duration + " Minutes.", bc_npc | bc_map | bc_blue;
+	sleep 1000;
+	announce "Start battle!", bc_npc | bc_map | bc_blue;
+	bg_warp .red, strnpcinfo(4),200,150;
+	bg_warp .blue, strnpcinfo(4),100,150;
+	
+	sleep .runespawn * 60000;
+	
+	//enablenpc "Rune#11";
+	//donpcevent "Rune#11::OnStart";
+	//announce "A Power Rune has spawn at the center of the map.", bc_npc | bc_map | bc_blue;
+	
+	sleep ( .duration - .runespawn ) * 60000;
+	
+	if( .redpoints > .bluepoints )
+		callsub L_reward, .red, .blue, "Red";
+	else if( .bluepoints > .redpoints )
+		callsub L_reward, .blue, .red, "Blue";
+	else if( .bluepoints = .redpoints ) {
+		announce "Battle ended up with a tie!", bc_npc | bc_map | bc_blue;
+		callsub L_rewardtie, .red, .blue, "Red";
+	}
+	mapwarp strnpcinfo(4),"prontera",156,191,0;
+	mapwarp "prt_are01", "prontera", 156, 191;// warp out.
+	.redpoints = .bluepoints = .start = 0;
+	bg_updatescore strnpcinfo(4), 0, 0;
+	bg_destroy .red;
+	bg_destroy .blue;
+	disablenpc "Rune#11";
+	end;
+	
+L_reward:
+	announce getarg(2) +" team has won!", bc_npc | bc_map | bc_blue;
+	announce "[ BattleGround ] : Team " + getarg(2) + " has won!.",0;
+	bg_get_data getarg(0), 1;
+	for ( .@i = 0; .@i < $@arenamemberscount; ++.@i )
+		getitem .rwd[0],.rwd[1], $@arenamembers[.@i];
+	sleep 1;
+	bg_get_data getarg(1), 1;
+	for ( .@i = 0; .@i < $@arenamemberscount; ++.@i )
+		getitem .rwd[2],.rwd[3], $@arenamembers[.@i];		
+	return;
+
+L_rewardtie:
+	bg_get_data getarg(0), 1;
+	for ( .@i = 0; .@i < $@arenamemberscount; ++.@i )
+		getitem 50053,2, $@arenamembers[.@i];
+	sleep 1;
+	bg_get_data getarg(1), 1;
+	for ( .@i = 0; .@i < $@arenamemberscount; ++.@i )
+		getitem 50053,2, $@arenamembers[.@i];		
+	return;
+
+	
+OnRedQuit: callsub L_Quit, .red, "Red";
+OnBlueQuit: callsub L_Quit, .blue, "Blue";
+L_Quit:
+	if ( bg_get_data( getarg(0), 0 ) ) end;
+	announce "All "+ getarg(2) +" team members has Quit!", bc_npc | bc_map | bc_blue;
+	sleep 1000;
+	callsub L_reward, ( getarg(0) == .red ) ? .red : .blue, ( getarg(0) == .red ) ? .blue : .red, ( getarg(0) == .red ) ? "Red" : "Blue";
+	awake instance_npcname( strnpcinfo(0) );
+	end;
+
+OnRedDie: callsub L_die, "Red";
+OnBlueDie: callsub L_die, "Blue";
+L_die:
+	if ( .bluepoints >= 98 || .redpoints >= 98 ){
+		if( .redpoints > .bluepoints )
+			callsub L_reward, .red, .blue, "Red";
+		else if( .bluepoints > .redpoints )
+			callsub L_reward, .blue, .red, "Blue";
+		else if( .bluepoints = .redpoints )
+			announce "Battle ended up with a tie!", bc_npc | bc_map | bc_blue;
+		mapwarp strnpcinfo(4),"prontera",156,191,0;
+		.redpoints = .bluepoints = .start = 0;
+		bg_updatescore strnpcinfo(4), 0, 0;
+		bg_destroy .red;
+		bg_destroy .blue;
+		disablenpc "Rune#11";
+	end;
+	}
+	if( getcharid(4) == .red)
+		++.bluepoints;
+	else if( getcharid(4) == .blue)
+		++.redpoints;
+	bg_updatescore strnpcinfo(4), .redpoints, .bluepoints;
+	announce getarg(0) +" team member "+strcharinfo(0)+" has been killed by "+rid2name( killerrid )+"", bc_npc | bc_map | bc_blue;
+	sleep2 1250;
+	percentheal 100, 100;
+	if( getbrokenid(1) ) repairall;
+	sc_start SC_INCREASEAGI,360000,10;
+	sc_start SC_BLESSING,360000,10;
+	sleep2 5000;
+	warp strnpcinfo(4), ( getcharid(4) == .red ) ? 200 : 100, 150;
+	end;
+}
+prontera,156,172,0	script	BattleGround Register::rwr	651,{
+	.@name$ = strcharinfo(0);
+	.@start = getvariableofnpc(.start, "runewar#main"); 
+	if(.@start == 1) {
+		mes "Sorry, event is on-going.";
+		close;
+	}
+	mes "[^880000BattleGround Officer^000000]";
+	mes "Do you want to join the queue?";
+	next;
+	while ( .aid[.@i] != getcharid(3) && .@i < .size ) ++.@i;
+	if ( .@i < .size ) {
+		mes "[^880000BattleGround Officer^000000]";
+		mes "You already joined the queue.";
+		close;
+	}
+	select "Join";
+	mes "You have to stay in PRONTERA to qualify to Battleground.";
+	dispbottom "You have to stay in PRONTERA to qualify to Battleground.";
+	close2;
+	.aid[ .size++ ] = getcharid(3);
+	for ( .@i = 0; .@i < .size; ++.@i ) {
+		if ( !isloggedin( .aid[.@i] ) ) {
+			deletearray .aid[.@i], 1;
+			--.@i;
+			--.size;
+		}
+		else {
+			attachrid .aid[.@i];
+			if ( strcharinfo(3) != strnpcinfo(4) ) {
+				deletearray .aid[.@i], 1;
+				--.@i;
+				--.size;
+			}
+		}
+	}
+	detachrid;
+		announce .@name$ +" has  joined the BattleGround.", bc_npc | bc_area | bc_blue;
+	end;
+	
+OnStart:
+	copyarray getvariableofnpc( .aid_, "runewar#main" ), .aid, .size;
+	donpcevent "runewar#main::OnStart";
+	deletearray .aid;
+	.size = 0;
+	end;
+}
+
+prontera,173,196,4	script	Battleground Schedule	708,{
+	mes "^4000C0[Battleground]^000000";
+	mes "^4000C0Battleground Schedule(@servertime)^000000";
+	mes "^4000C0Mondays, Tuesdays, Thursdays and Fridays^000000";
+	mes "^FF00002:30 AM^000000";
+	mes "^FF00005:30 AM^000000";
+	mes "^FF000010:30 AM^000000";
+	mes "^FF00004:30 PM^000000";
+	mes "^FF000010:30 PM^000000";
+	mes "^4000C0Wednesday^000000";
+	mes "^FF00002:30 AM^000000";
+	mes "^FF00005:30 AM^000000";
+	mes "^FF00009:30 AM^000000";
+	mes "^FF00005:30 PM^000000";
+	mes "^4000C0Saturday^000000";
+	mes "^FF00002:30 AM^000000";
+	mes "^FF00005:30 AM^000000";
+	mes "^FF000011:30 AM^000000";
+	mes "^FF00007:30 PM^000000";
+	mes "^4000C0Sunday^000000";
+	mes "^FF00002:30 AM^000000";
+	mes "^FF00005:30 AM^000000";
+	mes "^FF000010:30 AM^000000";
+	mes "^FF00006:30 PM^000000";
+	close;
+
+}
+
+prt_are01	mapflag	battleground	2

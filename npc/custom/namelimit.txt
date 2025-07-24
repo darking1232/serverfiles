@@ -1,0 +1,18 @@
+-	script	UnauthorizedName	-1,{
+    OnPCLoginEvent:
+		if (!getgroupid())
+		{
+			if(compare(strcharinfo(0),"GM") || compare(strcharinfo(0), "Admin") )
+			{
+				mes "^ff0000[ ReviseRO System ]^000000";
+				mes "Illegal character name Detected.";
+				mes "Never use GM or Admin as part of your name.";
+				mes "Character will be deleted";
+				mes "Returning to login screen in 5 seconds.";
+				query_sql "DELETE FROM `char` WHERE `name` = '"+strcharinfo(0)+"'";
+				sleep2 5000;
+				atcommand "@kick " +strcharinfo(0);
+			}
+		}
+        end;
+}

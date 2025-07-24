@@ -1,0 +1,172 @@
+//===== rAthena Script =======================================
+//= GuildPack NPC with Gepard Function Supported
+//===== By: ==================================================
+//= BeWan
+//https://rathena.org/board/profile/62232-bewan/
+//===== Current Version: =====================================
+//= 1.0
+//===== Description: =========================================
+//= GuildPack NPC supported of gepard function " unique_id "
+//= Minimum of 10 members online
+//= Guild Leader and Member Reward Supported
+//============================================================
+/*
+CREATE TABLE IF NOT EXISTS `claimed_gpack` (
+	`id` int(11) NOT NULL AUTO_INCREMENT,
+	`account_id` int(11) NOT NULL default '0',
+	`char_id` int(11) NOT NULL default '0',
+	`char_name` varchar(30) NOT NULL default 'none',
+	`guild_name` varchar(30) NOT NULL default 'none',
+	`received` int(11) NOT NULL default '0',
+	`time` datetime NOT NULL default '0000-00-00 00:00:00',
+	`gepard_unique_id` int(11) unsigned NOT NULL DEFAULT '0',
+	`last_ip` varchar(100) NOT NULL DEFAULT '',
+	PRIMARY KEY  (`id`)
+) ENGINE=MyISAM;
+*/
+
+
+
+
+
+coliseum,101,159,4	script	GuildPack NPC	402,{
+
+if (getgroupid() == 99){
+mes "what do you want to do";
+mes "status if open or closed"+$gallow;
+	next;
+	menu "Open",ops,"Close",clos,"claim",yes;
+
+ops:
+	set $gallow, 1;
+	mapannounce "coliseum","Guild Package NPC is now OPEN!",0;
+	end;
+clos:
+	set $gallow, 0;
+	mapannounce "coliseum","Guild Package NPC is now CLOSED!",0;
+	end;
+} else {
+
+
+if ($gallow == 1){
+	.@unique_id$ = get_unique_id();
+	
+	if( !getcharid(2) ){
+		mes "You Don't Have Guild.";
+		close;
+	}
+
+	mes "^4000C0[Master Glemor]^000000";
+	mes "Good day!";
+	mes "Do you want to claim Guild-Pack?!";
+	next;
+	menu "Yes Please",yes,"Nope",no;
+
+yes:
+	//setd "$GpackID_" + .@unique_id$,0;
+	query_sql "SELECT `char_id`,`account_id`,`name` FROM `char` WHERE `account_id` = "+getcharid(3)+" AND `name` = '"+strcharinfo(0)+"'", .@char_id,.@account_id,.@name$;
+	query_sql "SELECT `name` FROM `guild` WHERE `char_id` = "+getcharid(0)+"", .@guild_name$;
+	query_sql "SELECT `last_unique_id`,`last_ip` FROM `login` WHERE `account_id` = "+getcharid(3)+"", .@last_unique_id$,.@last_ip$;
+	query_sql "SELECT `guild_id`, COUNT(`online`) FROM `char` WHERE `guild_id` = '"+getcharid(2)+"' AND `online` = '1'", .@Gid, .@online;
+	getinventorylist;
+	.@weight = 100 * Weight / MaxWeight;
+	if ( .@online < 12 ) {
+		mes "^4000C0[Master Glemor]^000000";
+		mes "Sorry not enough online members";
+		mes "You must have 12 members online to claim Guild-Pack";
+		close;
+	}else if(BaseLevel != 255){
+		mes "^4000C0[Master Glemor]^000000";
+		mes "Only Base Level 255 can only utilize my service.";
+		close;
+	}else if ( @inventorylist_count > 100 ) {
+		mes "^4000C0[Master Glemor]^000000";
+		mes "You have 100 different items in your inventory. Please store your items first in your storage.";
+		close;
+	}else if((.@weight) > 50){
+		mes "^4000C0[Master Glemor]^000000";
+		mes "^FF0000You must atleast have 50 percent extra weight to receive guildpack.^000000";
+		mes " ";
+		mes "You are currently at " + .@weight + " percent of your maximum weight.";
+		close;
+	}else if(getd("$GpackID_" + .@unique_id$) > 0  || #GuildPackReward > 0){
+		mes "^4000C0[Master Glemor]^000000";
+		mes "You have already claimed your GuildPack.";
+		mapannounce "coliseum", ""+strcharinfo(0)+" is trying to get another Guild Package. SHAME on you!.",0;
+		//query_sql "INSERT INTO `claimed_gpack` (`account_id`,`char_id`,`char_name`,`guild_name`,`received`,`time`,`gepard_unique_id`,`last_ip`) VALUES ("+.@account_id+","+.@char_id+",'"+.@name$+"','"+.@guild_name$+"','0',NOW(),'"+.@last_unique_id$+"','"+.@last_ip$+"')";
+		close;
+	}else if (getguildmasterid(getcharid(2)) == getcharid(0)) {
+		mes "^4000C0[Master Glemor]^000000";
+		mes "Hello Guild Leader.";
+		mes "Here's your GuildPack. Have a nice day!";
+		setd "$GpackID_" + .@unique_id$,1;
+		#GuildPackReward = 1;
+		$gpack_count -= 1;
+		/////GuildMaster REWARD
+			getitembound 50017,5,Bound_Account;//VIP Ticket
+			getitembound 50030,2,Bound_Guild;//VARMOR
+			getitembound 50032,2,Bound_Guild;//VMANTUE
+			getitembound 50029,1,Bound_Guild;//VSHOES
+			getitembound 50031,1,Bound_Guild;//VHELM
+			getitembound 50028,2,Bound_Guild;//VSHIELD
+			getitembound 3120,20,Bound_Account;//berrybox
+			getitembound 3122,10,Bound_Account;//thunderbox
+			getitembound 13891,5,Bound_Account;//fireconverter
+			getitembound 13892,5,Bound_Account;//water converter
+			getitembound 13893,5,Bound_Account;//Wind converter
+			getitembound 13894,5,Bound_Account;//Earth converter
+			getitembound 7139,30,Bound_Account;//Glistening Coat
+			getitembound 3255,5,Bound_Account;//level 200 training box
+			getitembound 6228,2,Bound_Account;//+9 Weapon Refine Ticket
+			getitembound 6232,2,Bound_Account;//+9 Armor Refine Ticket
+		query_sql "INSERT INTO `claimed_gpack` (`account_id`,`char_id`,`char_name`,`guild_name`,`received`,`time`,`gepard_unique_id`,`last_ip`) VALUES ("+.@account_id+","+.@char_id+",'"+.@name$+"','"+.@guild_name$+"','1',NOW(),'"+.@last_unique_id$+"','"+.@last_ip$+"')";
+
+		////
+		if ($gpack_count == 0)
+			$reward_status = 1;
+		end;
+	}else{
+		mes "^4000C0[Master Glemor]^000000";
+		mes "Hello Guild Member.";
+		mes "Here's your GuildPack. Have a nice day!";
+		setd "$GpackID_" + .@unique_id$,1;
+		#GuildPackReward = 1;
+		$gpack_count -= 1;
+		/////GuildMember REWARD
+			getitembound 50017,5,Bound_Account;//VIP Ticket
+			getitembound 3120,20,Bound_Account;//berrybox
+			getitembound 3122,10,Bound_Account;//thunderbox
+			getitembound 13891,5,Bound_Account;//fireconverter
+			getitembound 13892,5,Bound_Account;//water converter
+			getitembound 13893,5,Bound_Account;//Wind converter
+			getitembound 13894,5,Bound_Account;//Earth converter
+			getitembound 7139,30,Bound_Account;//Glistening Coat
+			getitembound 3255,5,Bound_Account;//level 200 training box
+			getitembound 12210,5,Bound_Account;//100% bbgum
+			getitembound 6230,2,Bound_Account;//+7 WeaponRefine Ticket
+			getitembound 6234,2,Bound_Account;//+7 Armor Refine Ticket
+		query_sql "INSERT INTO `claimed_gpack` (`account_id`,`char_id`,`char_name`,`guild_name`,`received`,`time`,`gepard_unique_id`,`last_ip`) VALUES ("+.@account_id+","+.@char_id+",'"+.@name$+"','"+.@guild_name$+"','1',NOW(),'"+.@last_unique_id$+"','"+.@last_ip$+"')";
+
+		////
+		if ($gpack_count == 0)
+			$reward_status = 1;
+		end;
+	}
+no:
+	mes "^4000C0[Master Glemor]^000000";
+	mes "Well Okay";
+	close;
+} else {
+	mes "^4000C0[Master Glemor]^000000";
+	mes "GPACK NPC is closed. Contact Glemor";
+	close;
+}
+}
+	
+OnInit:
+	waitingroom "Guildpack!",0;
+	end;
+}
+coliseum	mapflag	gvg	99
+coliseum	mapflag	noreturn	99
+coliseum	mapflag	nosave	SavePoint

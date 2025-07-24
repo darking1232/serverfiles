@@ -1,0 +1,18 @@
+-	script	DayNight	-1,{
+   end;
+OnClock0600:
+   announce "Good Morning Revise Ragnarok Players",bc_blue|bc_all;
+   day;
+   end;
+OnClock1800:
+   announce "Good Evening Revise Ragnarok Players",bc_blue|bc_all;
+   night;
+   end;
+OnInit:
+   if(gettime(3)>=6 && gettime(3)<18)
+       end;
+   else
+       night;
+end;
+
+}

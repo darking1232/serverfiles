@@ -1,0 +1,18 @@
+-	script	CheckWoEHat	-1,{
+end;
+
+OnPCLoadMapEvent:
+if(getmapflag(strcharinfo(3),mf_gvg_castle)) //// For Castle Maps
+  {
+  changelook LOOK_HEAD_TOP,0;
+  changelook LOOK_HEAD_MID,0;
+  changelook LOOK_HEAD_BOTTOM,0;
+  end;
+  }
+///////////////// Change to normal when transfering to regular map.
+changelook LOOK_HEAD_TOP,getlook(LOOK_HEAD_TOP);
+changelook LOOK_HEAD_MID,getlook(LOOK_HEAD_MID);
+changelook LOOK_HEAD_BOTTOM,getlook(LOOK_HEAD_BOTTOM);
+end;
+
+}

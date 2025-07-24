@@ -1,0 +1,77 @@
+//CREATE TABLE IF NOT EXISTS `account_creation_reward` (
+//  `id` int(11) NOT NULL AUTO_INCREMENT,
+//  `account_id` int(11) NOT NULL DEFAULT '0',
+//  `char_id` int(11) NOT NULL DEFAULT '0',
+//  `name` varchar(30) NOT NULL DEFAULT '',
+//  `amount` int(11) unsigned NOT NULL DEFAULT '0',
+//  `claim_time` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
+//  PRIMARY KEY  (`id`)
+//) ENGINE=MyISAM;
+
+
+
+prontera,128,214,5	script	Account Creation Reward	899,{
+//make sure to change the "#COMPE_APRIL202020"
+//make sure to change the accountID range.
+
+		if (#ACCOUNTREWARD <= 0) {
+			mes "^FF0000[ Account Creation Reward NPC ]^000000";
+			mes "Account Creation reward is character bound.";
+			mes "Account Creation is strictly ^0000FF 1 per account ^000000.";
+			mes "Are you sure you want this character to receive the Account Creation reward reward?";
+			sleep2 3000;
+			if(select("Yes:No")==2) close;
+				next;
+					if (getcharid(3) > 2000222 ){
+							mes "^FF0000[ Account Creation Reward NPC ]^000000";
+							mes "It seems that this account is not part of the account creation reward. I'm sorry.";
+							end;
+					}
+					if( BaseJob==Job_Novice || BaseJob==Job_SuperNovice ) {
+							mes "^FF0000[ Account Creation Reward NPC ]^000000";
+							mes "Novice or Super Novice Job cannot claim the Account Creation reward.";
+							end;
+					}
+					if (getcharid(3) > 2000222 ){
+							mes "^FF0000[ Account Creation Reward NPC ]^000000";
+							mes "It seems that this account is not part of the account creation reward. I'm sorry.";
+							end;
+					}
+
+					if (((Weight*100)/MaxWeight) < 50) {
+						if (getcharid(3) > 2000222 ){
+							mes "^FF0000[ Account Creation Reward NPC ]^000000";
+							mes "It seems that this account is not part of the account creation reward. I'm sorry.";
+							end;
+						}
+							query_sql "SELECT `char_id`,`account_id`,`name` FROM `char` WHERE `account_id` = "+getcharid(3)+" AND `name` = '"+strcharinfo(0)+"'", .@char_id,.@account_id,.@name$;
+							//mes "Your account ID is "+.@account_id+" , Your char ID is "+.@char_id+" , Your Name is "+.@name$+"";
+							//end;
+							set #ACCOUNTREWARD, 1;
+							getitembound 12202,2,Bound_Char; //Steamed Tongue
+							getitembound 12203,2,Bound_Char; //Steamed Scorpion
+							getitembound 12204,2,Bound_Char; //Dragon Breath Cocktail
+							getitembound 12205,2,Bound_Char; //Hwergelmir's Tonic
+							getitembound 12206,2,Bound_Char; //Cooked Nine Tail's Tails 
+							getitembound 12207,2,Bound_Char; //Stew Of Immortality
+							getitembound 3252,5,Bound_Char; //Level 200 All-in-One Buff Scroll
+							getitembound 50017,3,Bound_Char; //Vip Ticket
+							query_sql "INSERT INTO `account_creation_reward` (`account_id`,`char_id`,`name`,`claim_time`) VALUES ("+.@account_id+",'"+.@char_id+"','"+.@name$+"',NOW())";
+							announce ""+strcharinfo(0)+": has claimed his/her Account Creation reward. Congratulations! Invite your friends!.",0,0x00FF00;
+							mes "^FF0000[ Account Creation Reward ]^000000";
+							mes "You gained reward for the Account Creation reward.";
+							close;
+					}else {
+							mes "^FF0000[ Account Creation Reward NPC ]^000000";
+							mes "You're weight is more than 50%, Please remove some extra weight.";
+							close;
+					}
+
+		} else {
+				mes "^FF0000[ Account Creation Reward NPC ]^000000";
+				mes "You already received your Account Creation reward.";
+				close;
+		}
+	
+	end;
+}

@@ -1,0 +1,140 @@
+/*
+CREATE TABLE IF NOT EXISTS `like_and_share_reward` (
+	`id` int(11) NOT NULL AUTO_INCREMENT,
+	`account_id` int(11) NOT NULL default '0',
+	`char_name` varchar(30) NOT NULL default 'none',
+	`received` int(11) NOT NULL default '0',
+	`time` datetime NOT NULL default '0000-00-00 00:00:00',
+	`season` int(11) NOT NULL default '0',
+	`item_received` varchar(30) NOT NULL default 'none',
+	PRIMARY KEY  (`id`)
+) ENGINE=MyISAM;
+
+*/
+
+
+prontera,131,217,5	script	Like Share Reward	806,{
+//change season and #first like and share.
+	set .@season,3;
+	set .@name$,strcharinfo(0);
+	if( BaseJob==Job_Novice || BaseJob==Job_SuperNovice ) {
+		mes "^0055FF[Like & Share Reward]^000000";
+		mes "Novice or Super Novice Job cannot claim the like and share reward.";
+	end;
+	}
+
+//5 WINNERS FIRST WAVE
+query_sql "SELECT `account_id` FROM `like_and_share_reward` WHERE `account_id` = "+getcharid(3)+"", .@account_id;
+if(!.@account_id){
+	mes "^0055FF[Like & Share Reward]^000000";
+	mes "It appears that the account you've used is not applicable to receive our like and share event Reward.";
+	close;
+}
+query_sql "SELECT `account_id`,`received` FROM `like_and_share_reward` WHERE `account_id` = "+getcharid(3)+"", .@account_id,.@received;
+if( .@received == 1 ){
+	mes "^0055FF[Like & Share Reward]^000000";
+	mes "You already received your reward. I'm am sorry.";
+	close;
+}
+	if (#THIRDLIKEANDSHARE <= 0) {
+	mes "^0055FF[Like & Share Reward]^000000";
+	mes "Thank you for joining our like and share event";
+	next;
+	mes "^0055FF[Like & Share Reward]^000000";
+	mes "1 Random Item will be given to you";
+	mes "Please see below possible reward";
+	mes "- Odin Valykrie Helm Item ID ^FF0000[50031]^000000";
+	mes "- Odin Valykrie Armor Item ID ^FF0000[50030]^000000";
+	mes "- Cyclop's Eye Item ID ^FF0000[5135]^000000";
+	next;
+	mes "^0055FF[Like & Share Reward]^000000";
+	mes "Success rate for each item is even out to avoid issues.";
+	next;
+	mes "^0055FF[Like & Share Reward]^000000";
+	mes "I will randomly generate a number Between ^FF00001-90^000000.";
+	mes "If the randomly generated number is ^FF00001-30^000000.";
+	mes "You'll win Odin Valykrie Helm";
+	mes "------------------------------";
+	mes "If the randomly generated number is ^FF000031-60^000000.";
+	mes "You'll win Odin Valykrie Armor";
+	mes "------------------------------";
+	mes "If the randomly generated number is ^FF000061-90^000000.";
+	mes "You'll win Cyclop's Eye";
+	next;
+	mes "^0055FF[Like & Share Reward]^000000";
+	mes "Shall we begin?";
+	sleep2 3000;
+	next;
+					switch ( select( "YES","NO")) {
+					case 1:
+						mes "^0055FF[Like & Share Reward]^000000";
+						mes "I will now start to randomly generate a number.";
+						next;
+                				if (((Weight*100)/MaxWeight) > 75) {
+									mes "^0055FF[Like & Share Reward]^000000";
+									mes "Hold on.. Your weight is more than 75%. Please clear up your storage first.";
+									end;
+                				}
+								query_sql "SELECT `account_id` FROM `like_and_share_reward` WHERE `account_id` = "+getcharid(3)+"", .@account_id;
+								if(!.@account_id){
+									mes "^0055FF[Like & Share Reward]^000000";
+									mes "It appears that the account you've used is not applicable to receive our like and share event Reward.";
+									close;
+								}
+								query_sql "SELECT `account_id`,`received` FROM `like_and_share_reward` WHERE `account_id` = "+getcharid(3)+"", .@account_id,.@received;
+								if( .@received == 1 ){
+									mes "^0055FF[Like & Share Reward]^000000";
+									mes "You already received your reward. I'm am sorry.";
+									close;
+								}
+						mes "^0055FF[Like & Share Reward]^000000";
+						mes "The random generated number is.......";		
+						next;
+						.@number = rand(1,70);
+						mes "^0055FF[Like & Share Reward]^000000";
+						mes "Generated Number: ^FF0000"+ .@number +"^000000";
+						if ( .@number >= 1 && .@number <= 30){
+							mes "You won Odin Valykrie Helm";
+							mes "Thank you for joining our like and share!. Bye..";
+							getitem 50031,1;
+							set .@itemrec$,getitemname(50031);
+							set #THIRDLIKEANDSHARE, 1;
+							announce ""+strcharinfo(0)+": has claimed his/her like and share event Reward. He won "+getitemname(50031)+". Congratulations!.",0,0x00FF00;
+							query_sql "UPDATE `like_and_share_reward` SET `received` = '1', `time` = NOW(), `season` = "+.@season+",`char_name` = '"+.@name$+"',`item_received` = '"+.@itemrec$+"' WHERE `account_id`='"+.@account_id+"'";
+							close;
+						}
+						if ( .@number >= 31 && .@number <= 60){
+							mes "You won Odin Valykrie Armor";
+							mes "Thank you for joining our like and share!. Bye..";
+							getitem 50030,1;
+							set .@itemrec$,getitemname(50030);
+							set #THIRDLIKEANDSHARE, 1;
+							announce ""+strcharinfo(0)+": has claimed his/her like and share event Reward. He won "+getitemname(50030)+". Congratulations!.",0,0x00FF00;
+							query_sql "UPDATE `like_and_share_reward` SET `received` = '1', `time` = NOW(), `season` = "+.@season+",`char_name` = '"+.@name$+"',`item_received` = '"+.@itemrec$+"' WHERE `account_id`='"+.@account_id+"'";
+							close;
+						}
+						if ( .@number >= 61 && .@number <= 70){
+							mes "You won Cyclop's Eye";
+							mes "Thank you for joining our like and share!. Bye..";
+							getitem 5135,1;
+							set .@itemrec$,getitemname(5135);
+							set #THIRDLIKEANDSHARE, 1;
+							announce ""+strcharinfo(0)+": has claimed his/her like and share event Reward. He won "+getitemname(5135)+". Congratulations!.",0,0x00FF00;
+							query_sql "UPDATE `like_and_share_reward` SET `received` = '1', `time` = NOW(), `season` = "+.@season+",`char_name` = '"+.@name$+"',`item_received` = 'Cyclops Eye' WHERE `account_id`='"+.@account_id+"'";
+							close;
+						}
+					break;
+					
+					case 2:
+							mes "^0055FF[Like & Share Reward]^000000";
+							mes "Come back when you are ready..";
+							close;
+					break;
+					}
+					end;
+	} else {
+		mes "^0055FF[Like & Share Reward]^000000";
+		mes "It appears that you already received your reward.";
+		end;
+	}
+}

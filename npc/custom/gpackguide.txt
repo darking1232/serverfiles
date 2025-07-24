@@ -1,0 +1,53 @@
+-	script	ReviseRogpack	-1,{
+
+OnInit:
+bindatcmd("gpack",strnpcinfo(0)+"::OnGpackReviseRO");
+end;
+
+OnGpackReviseRO:
+if(!getmapflag( strcharinfo(3),mf_town ) ){
+mes "^4000C0[ReviseRO Helper]^000000";
+mes "You should be in Prontera to use my function.";
+end;
+}
+mes "^4000C0[ReviseRO Helper]^000000";
+mes "I am here to share to you the details of GUILD Package";
+next;
+mes "^4000C0[ReviseRO Helper]^000000";
+mes "^FF0000 Requirements:^000000";
+mes "-----------------------------";
+mes "Minimum of 12 members online when claiming Guild Package";
+mes "-----------------------------";
+mes "All members must be level 255.";
+mes "-----------------------------";
+mes "Guild level must be 50.";
+mes "-----------------------------";
+mes "No dual client.";
+mes "-----------------------------";
+mes "1 Personal computer per account";
+mes "-----------------------------";
+mes "Multiple Personal computer in 1 IP address is allowed.[To support players playing in computer shops]";
+mes "-----------------------------";
+mes "All 12 minimum players should be online until all members got their GPACK";
+mes "-----------------------------";
+sleep2 5000;
+next;
+mes "^4000C0[ReviseRO Helper]^000000";
+mes "^FF0000ADDITIONAL IMPORTANT REQUIREMENT^000000";
+mes"Your guild will be under observation for 1-3 days; to see if you really are a guild and all members are active in the game";
+mes "(In some cases, others only ask or hire 'pilot' to control their other accounts to abuse the guild package) This is strictly prohibited and will result to IP BAN.";
+mes "-----------------------------";
+mes "After 3 days, If you are really a GUILD and playing actively. that is the time GPACK will be given.";
+mes "-----------------------------";
+mes "Guild Package Items are account bounded";
+mes "-----------------------------";
+sleep2 5000;
+next;
+mes "^4000C0[ReviseRO Helper]^000000";
+mes "if you have any question feel free to contact us via FB page ^FF0000www.facebook.com/ReviseRO/^000000";
+mes "-----------------------------";
+mes "or type @request ingame";
+close;
+}
+
+

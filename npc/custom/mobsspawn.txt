@@ -1,0 +1,3 @@
+// peco peco summon
+ordeal_3-2,0,0,0,0	monster	Peco Gold	3502,100,0,0,"gold_room_main::OnKill"
+ordeal_3-2,0,0,0,0	monster	Guardian	3001,20,0,0,0

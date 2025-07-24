@@ -1,0 +1,24 @@
+prt_in,22,71,4	script	MrIdentifier	702,{
+set .@Price, 10000;	// Zeny per identify
+getinventorylist;
+for(set .@i,0; .@i<@inventorylist_count; set .@i,.@i+1) {
+	if (@inventorylist_identify[.@i]) continue;
+	if (Zeny < .@Price) {
+		dispbottom "It costs "+.@Price+" to identify an item."; break; }
+	mes "It cost "+.@Price+" to identify each item";
+	mes "Do you want to proceed?";
+	if(select("Yes Please:No Thank you") == 1) {
+	set Zeny, Zeny-.@Price;
+	delitem2 @inventorylist_id[.@i],1,0,0,0,0,0,0,0;
+	getitem @inventorylist_id[.@i],1;
+	setarray .@Total[0], .@Total[0]+1, .@Total[1]+.@Price; 
+if (!.@Total[0]) {
+	message strcharinfo(0),"No items identified."; end; }
+specialeffect2 154;
+message strcharinfo(0),"Identified "+.@Total[0]+" items"+((.@Total[1])?" for "+.@Total[1]+" Zeny":"")+".";
+end;
+	}
+	end;
+}
+end;
+}

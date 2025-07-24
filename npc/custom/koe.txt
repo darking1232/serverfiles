@@ -1,0 +1,238 @@
+//===== Hercules Script ===========================================
+//= King of Emperium Hill
+//===== By: =======================================================
+//= AnnieRuru
+//===== Current Version: ==========================================
+//= 1.2
+//===== Compatible With: ==========================================
+//= hercules & rathena 2018-04-08
+//===== Description: ==============================================
+//= defends the emperium in the middle of the map until times up
+//===== Topic =====================================================
+//= http://hercules.ws/board/topic/4495-gvg-king-of-emperium-hill/
+//===== Additional Comments: ======================================
+//= Finally there is a topic for this !
+//=================================================================
+/*
+CREATE TABLE IF NOT EXISTS `koe_gl_rwrd_rcv` (
+	`id` int(11) NOT NULL AUTO_INCREMENT,
+	`account_id` int(11) NOT NULL default '0',
+	`char_name` varchar(30) NOT NULL default 'none',
+	`guild_name` varchar(30) NOT NULL default 'none',
+	`received` int(11) NOT NULL default '0',
+	`time` datetime NOT NULL default '0000-00-00 00:00:00',
+	PRIMARY KEY  (`id`)
+) ENGINE=MyISAM;
+*/
+
+-	script	KoE	FAKE_NPC,{
+OnInit:
+	disablenpc "Exit#KoE";
+	bindatcmd "koe", strnpcinfo(0)+"::OnCommand", 99,99;
+	bindatcmd "joinkoe", strnpcinfo(0)+"::OnKoeJoin";
+	end;
+OnCommand:
+	dispbottom "Status 1 = Active, 0 = NotActive. Current status is : "+.start;
+	if ( compare( .@atcmd_parameters$, "on" ) ) goto L_start;
+	else if ( compare( .@atcmd_parameters$, "off" ) ) goto L_end;
+	else {
+		dispbottom "type - '@koe on' to start the event";
+		dispbottom "type - '@koe off' to end the event";
+	}
+	end;
+
+OnKoeJoin:
+	if (.start == 0 ){
+		dispbottom "King of Emperium is not active.";
+	} else {
+	if ( !getcharid(2) ) {
+		mes "You must have a guild to participate in the ^FF0000King of Emperium Tournament^000000.";
+		close;
+	}
+		query_sql "SELECT guild_lv FROM guild WHERE guild_id = "+getcharid(2), .@guild_lv;
+	if (.@guild_lv < 50) {
+		mes "you cant join the King of Emperium";
+		mes "Your guild must be level 50.";
+		close;
+	}
+	if(!getmapflag(strcharinfo(3),mf_town)){
+		mes "You have to be in town to use this command";
+		close;
+	}
+		switch( rand(1,4) ){
+			case 1:	warp "guild_vs1", 50, 88; end;
+			case 2:	warp "guild_vs1", 88, 50; end;
+			case 3:	warp "guild_vs1", 50, 11; end;
+			case 4:	warp "guild_vs1", 11, 50; end;
+		}
+
+	}
+	end;
+
+L_start:
+//OnClock2000: // everyday 8pm starts
+OnWed2000://8pm
+OnSat2000://8pm
+OnSun2100://9pm
+	if ( .start ) end;
+	gvgon "guild_vs1";
+
+	announce "The King of Emperium has begun!", bc_all;
+	sleep 2000;
+	announce "Please type @joinkoe if you would like to participate The King of Emperium .", bc_all;
+	set .koest, 1;
+	.start = true;
+	disablenpc "Exit#KoE";
+	$koegid = 0;
+	donpcevent "::OnRevKoE";
+	maprespawnguildid "guild_vs1", $koegid, 3;
+	killmonster "guild_vs1", "KoE::OnEmpDead";
+	monster "guild_vs1",49,49, "EMPERIUM", 1288, 1, "KoE::OnEmpDead";
+	sleep 600000; //OnTimer1800000:
+	announce "King of Emperium is about to end in 20 Minutes. Join now by typing @joinkoe.", bc_all;
+	sleep 600000; //OnTimer600000:
+	announce "King of Emperium is about to end in 10 Minutes. Join now by typing @joinkoe.", bc_all;
+	sleep 300000; //OnTimer300000:
+	announce "King of Emperium is about to end in 5 Minutes. Join now by typing @joinkoe.", bc_all;
+	end; 
+L_end:
+//OnClock2100: // everyday 9pm ends
+OnWed2030://9pm
+OnSat2030://9pm
+OnSun2130://10pm
+	gvgoff "guild_vs1";
+	announce "The King of Emperium is over! Congratulations to ["+ getguildname($koegid) +"] guild.", bc_all;
+	//announce "The King of Emperium is over!",bc_all;
+	.start = 0;
+	set .koest, 0;
+	enablenpc "Exit#KoE";
+	killmonster "guild_vs1", "KoE::OnEmpDead";
+	maprespawnguildid "guild_vs1", $koegid, 2; // uncomment this line to kick non-owner off the map when event ends
+
+	if ($koegid) {
+		.@aid = getcharid(3, getguildmaster($koegid));
+		if (.@aid && isloggedin(.@aid)) {
+			attachrid( .@aid, true );
+			.@weight = 100 * Weight / MaxWeight;
+			if((.@weight) > 80 && isloggedin(.@aid)){
+				query_sql "SELECT `account_id`,`name` FROM `char` WHERE `name` = '"+getguildmaster($koegid)+"'", .@account_id,.@name$;
+				query_sql "SELECT `name` FROM `guild` WHERE `master` = '"+getguildmaster($koegid)+"'", .@guild_name$;
+				query_sql "INSERT INTO `koe_gl_rwrd_rcv` (`account_id`,`char_name`,`guild_name`,`received`,`time`) VALUES ("+.@account_id+",'"+.@name$+"','"+.@guild_name$+"','2',NOW())";
+				announce "Guild "+getguildname($koegid)+" under guild master "+.@name$+" Failed to receive The King of Emperium reward due to weight issue.",0;
+				end;
+			}
+			query_sql "SELECT `account_id`,`name` FROM `char` WHERE `account_id` = "+.@aid+"", .@account_id,.@name$;
+			query_sql "SELECT `name` FROM `guild` WHERE `char_id` = "+getcharid(0, getguildmaster($koegid))+"", .@guild_name$;
+			//guild master only
+			getitem 3161, 10, .@aid; //Revisero treasure box
+			//getitem 50026, 3, .@aid; //headgear custome ticket
+			getitem 3120,10, .@aid; //Yggdrasil box
+			getitem 50049,10, .@aid;//revisero point box
+			getitem 12412,3, .@aid;//HE Bubble Gum
+			getitem 50050,10, .@aid;//HE Bubble Gum
+			query_sql "INSERT INTO `koe_gl_rwrd_rcv` (`account_id`,`char_name`,`guild_name`,`received`,`time`) VALUES ("+.@account_id+",'"+.@name$+"','"+.@guild_name$+"','1',NOW())";
+			announce "Guild "+getguildname($koegid)+" under guild master "+.@name$+" has received the KoE Reward.",0;
+			detachrid;
+
+		} else{
+			query_sql "SELECT `account_id`,`name` FROM `char` WHERE `name` = '"+getguildmaster($koegid)+"'", .@account_id,.@name$;
+			query_sql "SELECT `name` FROM `guild` WHERE `master` = '"+getguildmaster($koegid)+"'", .@guild_name$;
+			query_sql "INSERT INTO `koe_gl_rwrd_rcv` (`account_id`,`char_name`,`guild_name`,`received`,`time`) VALUES ("+.@account_id+",'"+.@name$+"','"+.@guild_name$+"','0',NOW())";
+			announce "Guild "+getguildname($koegid)+" under guild master "+.@name$+" Failed to receive The King of Emperium reward due to being offline/disconnected.",0;
+		}
+	}
+	mapannounce "guild_vs1","All Players in KoE Map will be warped out in 1 minute.",bc_map,0x0ceedb;
+	sleep 60000;
+	mapwarp "guild_vs1", "prontera", 156, 191;// warp out.
+	end;
+
+OnEmpDead:
+	$koegid = getcharid(2);
+	set .@breaker$, strcharinfo(0); 
+	announce "The current King of Emperium is ["+ strcharinfo(2) +"] guild.["+ .@breaker$ +"] break the Emperium", bc_all;
+	donpcevent "::OnRevKoE";
+	maprespawnguildid "guild_vs1", $koegid, 2;
+	killmonster "guild_vs1", "KoE::OnEmpDead";
+	sleep 1000;
+	if ( .start || .koest == 1 ){
+		if((gettime(DT_DAYOFWEEK)==WEDNESDAY) && (gettime(DT_HOUR)>=21 && gettime(DT_MINUTE)>=0 && gettime(DT_SECOND)>=0)) goto L_end;
+		if((gettime(DT_DAYOFWEEK)==SATURDAY) && (gettime(DT_HOUR)>=21 && gettime(DT_MINUTE)>=0 && gettime(DT_SECOND)>=0)) goto L_end;
+		if((gettime(DT_DAYOFWEEK)==SUNDAY) && (gettime(DT_HOUR)>=22 && gettime(DT_MINUTE)>=0 && gettime(DT_SECOND)>=0)) goto L_end;
+		monster "guild_vs1",49,49, "EMPERIUM", 1288, 1, "KoE::OnEmpDead";
+	}
+	end;
+}
+
+//// KoE Entrance
+//prontera,155,191,4	script	The King#KoE	1_M_MERCHANT,{
+//	mes "[The King]";
+//	if ( !getcharid(2) ) {
+//		mes "You must have a guild to participate in the ^FF0000King of Emperium Tournament^000000.";
+//		close;
+//	}
+//	query_sql "SELECT guild_lv FROM guild WHERE guild_id = "+getcharid(2), .@guild_lv;
+//	if (.@guild_lv < 50) {
+//		mes "you cant join the King of Emperium";
+//		mes "Your guild must be level 50.";
+//	}
+//	mes "Hello.";
+//	mes "Would you like to participate in the ^FF0000King of Emperium Tournament^000000?";
+//	if ( select ( "Yes", "No" ) == 2 ) close;
+//	if ( !getvariableofnpc( .start, "KoE" ) ) close;
+//	
+//	switch( rand(1,4) ){
+//	case 1:	warp "guild_vs1", 50, 88; end;
+//	case 2:	warp "guild_vs1", 88, 50; end;
+//	case 3:	warp "guild_vs1", 50, 11; end;
+//	case 4:	warp "guild_vs1", 11, 50; end;
+//	}
+//}
+
+// KoE Exit
+guild_vs1,49,56,5	script	Exit#KoE	1_M_BARD,{
+	mes "Congratulations! Bye.";
+	close2;
+	warp "prontera",156,191;
+	end;
+}
+
+// Flags
+
+prontera,166,189,4	script	King of Emperium#1::koe_flag	GUILD_FLAG,{
+	if ( !$koegid ) end;
+	mes "^4000C0[King of Emperium Hill]^000000";
+	mes "The Current King of Emperium Hill is the ["+ getguildname($koegid) +"] guild.";
+	mes "";
+	mes "^4000C0KoE Schedule(@servertime)^000000";
+	mes "^4000C0Wednesday^000000";
+	mes "^FF00008PM-8:30PM^000000";
+	mes "^4000C0Saturday^000000";
+	mes "^FF00008PM-8:30PM^000000";
+	mes "^4000C0Sunday^000000";
+	mes "^FF00009PM-9:30PM^000000";
+	close;
+
+
+OnInit: // Uncomment this line to make the emblem stay after @reloadscript
+OnRevKoE:
+	flagemblem $koegid;
+	//flagemblem GetCastleData("guild_vs1", 1);
+	end;
+}
+
+guild_vs1,61,49,6	duplicate(koe_flag)	King of Emperium#2	GUILD_FLAG
+guild_vs1,38,49,2	duplicate(koe_flag)	King of Emperium#3	GUILD_FLAG
+guild_vs1,49,61,0	duplicate(koe_flag)	King of Emperium#4	GUILD_FLAG
+guild_vs1,49,38,4	duplicate(koe_flag)	King of Emperium#5	GUILD_FLAG
+
+guild_vs1	mapflag	nobranch
+guild_vs1	mapflag	nomemo
+guild_vs1	mapflag	nopenalty
+guild_vs1	mapflag	noreturn
+guild_vs1	mapflag	nosave	SavePoint
+guild_vs1	mapflag	noteleport
+guild_vs1	mapflag	nowarp
+guild_vs1	mapflag	nowarpto
+guild_vs1	mapflag	guildlock
+guild_vs1	mapflag	noicewall
+guild_vs1	mapflag	notrade

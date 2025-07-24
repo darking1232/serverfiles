@@ -1,0 +1,518 @@
+//=============Valkyrie Quest==============
+//===================== BTS =====================================================
+prontera.gat,162,205,5	script	Break the Seal	403,{
+if(bry_bry >= 1) goto L_taposme;
+if(hen_hen >= 1) goto L_taposna;
+if(hen_hen < 1)
+mes "[ Break the Seal ]";
+mes "I will foretell you about Breaking the Seal Quest";
+mes "I am the guardian of the seal, break it and recieve my treasure.";
+next;
+mes "[ Break the Seal ]";
+mes "Odin Valkyrie Armor can be obtained somewhere in pay_fild10";
+mes "Odin Valkyrie Shield can be obtained somewhere in gef_fild07";
+mes "Odin Valkyrie Shoes can be obtained somewhere in lighthalzen";
+mes "Odin Valkyrie Manteau can be obtained somewhere in comodo";
+mes "Odin Valkyrie Helm can be obtained somewhere in valkyrie";
+next;
+mes "[ Break the Seal ]";
+mes "These are what I need";
+mes "20 Pieces of Ancient Lips";
+mes "3 Pieces of Peridot";
+mes "3 Pieces of Biotite";
+mes "3 Pieces Talon of Griffon";
+mes "3 Pieces Rose Quartz";
+mes "3 Pieces Agate";
+mes "3 Pieces Fragment of Rossata Stone";
+mes "3 Pieces Phlogopite";
+next;
+mes "40 Pieces of Young Twig";
+mes "3 Pieces of Mother's Nightmare";
+mes "3 Pieces of Matchstick";
+mes "300 Pieces of Hand of God";
+mes "100 Pieces of Cursed Seal";
+mes "1 Skeletal Armor Piece";
+next;
+mes "So, are you up to my quest dear child?";
+menu "Yes!.",-, "No, I'm sorry.",L_later;
+
+
+mes "[ Break the Seal ]";
+mes "Are the items ready? Let me check.";
+next;
+if (((Weight*100)/MaxWeight) > 80){ mes "You are over 80% overweight. Please free up enough space from your inventory before transacting to me again."; end;}
+if(countitem(1054) < 20 || countitem(7289) < 3 || countitem(7297) < 3 || countitem(7018) < 40 ||countitem(7020) < 3 ||countitem(7035) < 3 || countitem(1009) < 300 || countitem(7442) < 100 || countitem(7048) < 3 || countitem(7293) < 3) goto L_later2;
+if(countitem(7291) < 3 || countitem(7211) < 3 || countitem(7290) < 3 || countitem(7450) < 1) goto L_later2;
+delitem 1054,20;
+delitem 7289,3;
+delitem 7297,3;
+delitem 7018,40;
+delitem 7020,3;
+delitem 7035,3;
+delitem 1009,300;
+delitem 7442,100;
+delitem 7048,3;
+delitem 7293,3;
+delitem 7291,3;
+delitem 7211,3;
+delitem 7290,3;
+delitem 7450,1;
+
+mes "[ Break the Seal ]";
+mes "Another brave one succeded.";
+set ron_ron,1;
+next;
+
+switch (select("Your Welcome")) {
+
+case 1: // Castle Drops
+  set .@gamble1,rand(1,500);
+  if ((.@gamble1 > 200) && (.@gamble1 < 205)) {
+set .@gamble2,rand(1,10);
+if	  ((.@gamble2 > 0) && (.@gamble2 <  3)) set .@item,7086; // esg
+else if ((.@gamble2 > 2) && (.@gamble2 <  5)) set .@item,7090; // ripple
+else if ((.@gamble2 > 4) && (.@gamble2 <  7)) set .@item,7091; // billow
+else if ((.@gamble2 > 6) && (.@gamble2 <  9)) set .@item,7077; // silver
+else if ((.@gamble2 > 8) && (.@gamble2 < 11)) set .@item,7078; // wov
+  }
+  else if ((.@gamble1 >   0) && (.@gamble1 < 201)) set .@item,7086; // esg
+  else if ((.@gamble1 > 204) && (.@gamble1 < 301)) set .@item,7090; // ripple
+  else if ((.@gamble1 > 300) && (.@gamble1 < 401)) set .@item,7091; // billow
+  else if ((.@gamble1 > 401) && (.@gamble1 < 481)) set .@item,7077; // silver
+  else if ((.@gamble1 > 480) && (.@gamble1 < 501)) set .@item,7078; // wov
+break;
+}
+
+getitem .@item,1;
+mes "[ Break the Seal ]";
+mes "Ah, you have out done your self!";
+mes "Thank you for your aid.";
+mes "Now start your journey to find my Nephews who hold the Valkyries";
+announce "Wow! The Seal has been annihilated by "+strcharinfo(0)+" He has just broken the seal and will start the quest of gaining the Odin Valkyrie Set!",0x33FF66;
+close2;
+end;
+L_taposna:
+mes "[ Break the Seal ]";
+mes "Go out and search the Fields of Payon the Fields of Geffen and the Towns of Lighthalzen and Comodo for the Odin Valkyrie Equipments";
+close;
+L_taposme:
+mes "[ Break the Seal ]";
+mes "You've already surpassed this quest and there is no point in doing it again.";
+close;
+L_later:
+mes "[ Break the Seal ]";
+mes "Well too bad";
+mes "Child, I don't like to call you a coward, but you are.";
+close;
+L_later2:
+mes "[ Break the Seal ]";
+mes "*piff*";
+mes "You lack some items.";
+mes "I do not accept cowardice, come back to me when you're brave enough.";
+close;
+
+}
+pay_fild10.gat,182,157,5	script	Kimuel	900,{
+if(bry_bry >= 1) goto L_udone;
+if(kim_kim >= 1) goto L_tapospopo;
+if(ron_ron >= 1) goto continueq;
+if(ron_ron < 1)
+{
+mes "[ Kimuel ]";
+mes "Are you the delivery boy of Pizza Hut?";
+mes "If not go away I don't need you!";
+close;
+}
+continueq:
+
+mes "[ Kimuel ]";
+mes "Oh Grasya Santisimo!!";
+mes "You have spoken to Uncle Break the Seal!?";
+next;
+mes "[ Kimuel ]";
+mes "By the way I am Kimuel of Payon the Crafter of the Odin Valkyrie Armor";
+mes "Would you like to possess it?";
+menu "Yes, I deserve it!",-,"No, I'm not good enough.",L_ayaw;
+next;
+mes "[ Kimuel ]";
+mes "This Great Armor is very complicated, it needs very rare materials to craft it. If you really want to possess it gather these items for me";
+next;
+mes "1 Bloody Edge";
+mes "1 Valhallas Flower";
+mes "10 Three-Headed Dragon's head";
+mes "4 Emblem of Sun God";
+mes "1 Chain Mail[1]";
+mes "500 Treasure Box";
+mes "I also need 800,000,000 Zeny.";
+next;
+mes "[ Kimuel ]";
+mes "I will be waiting for you chosen one!";
+if(countitem(7024) < 1 ||countitem(7510) < 1 || countitem(7443) < 10 || countitem(7086) < 4 || countitem(7444) < 500 || countitem(2315) < 1 || Zeny < 800000000 ) goto koolang;
+if(countitem(7024) >= 1 || countitem(7510) >= 1 || countitem(7443) >= 10 || countitem(7086) >= 4 || countitem(7444) >= 500 || countitem(2315) >= 1 || Zeny > 799999999) goto kontinueq;
+close;
+L_ayaw:
+
+mes "[ Kimuel ]";
+mes "Wacha Wachi Wacho... Go! Shoooo";
+mes "Just speak to me if you want it already";
+close;
+
+
+koolang:
+next;
+mes "[ Kimuel ]";
+mes "As I said, one missing material and all the others go to waste";
+close;
+kontinueq:
+next;
+if (((Weight*100)/MaxWeight) > 75){ mes "You are over 75% overweight. Please free up enough space from your inventory before transacting to me again."; end;}
+mes "[ Kimuel ]";
+mes "Very well done my friend you have finished the quest and acquired the Odin Valkyrie Armor.";
+delitem 7024,1;
+delitem 7510,1;
+delitem 7443,10;
+delitem 7086,4;
+delitem 7444,500;
+delitem 2315,1;
+set Zeny , Zeny - 800000000;
+next;
+getitem 50030,1;
+set kim_kim,1;
+next;
+mes "[ Kimuel ]";
+mes "Good Job! Enjoy your precious item.";
+mes "Now, go ahead and seek my Brothers and Cousins to finish the quest";
+mes "And when you gain the Valkyrie Set speak to Bryan";
+mes "If you have no clue about their location, my brothers and cousins are scattered around Rune-Midgard and Bryan is in Valkyrie";
+announce "Wow!"+strcharinfo(0)+" has just acquired the mystical Odin Valkyrie Armor.",8;
+close;
+L_tapospopo:
+mes "[ Kimuel ]";
+mes "As I said, complete the Odin Valkyrie Quest";
+mes "And then speak to Bryan";
+close;
+L_udone:
+mes "[ Kimuel ]";
+mes "This quest, once done there is no more repeating";
+close;
+}
+
+gef_fild07.gat,185,249,5	script	Jhep	899,{
+if(bry_bry >=1) goto L_bulmadone;
+if(jhe_jhe >=1) goto L_bulmatapos;
+if(ron_ron >=1) goto B_ulma;
+if(ron_ron < 1)
+{
+mes "[ Jhep ]";
+mes "I am sight seeing, don't disturb me";
+mes "Go far far away from me!!";
+close;
+}
+B_ulma:
+mes "[ Jhep ]";
+mes "Oh, you know my Uncle?";
+mes "Well, nice to meet you. I'm Jhep";
+mes "I craft the Odin Valkyrie Shield";
+mes "Would you like me to craft the said shield for you?";
+menu "Okay",-,"Nope",M_ofo;
+next;
+
+mes "[ Jhep ]";
+mes "The Odin Valkyrie Shield is a very difficult item to craft and the materials are rare. Well if you're sure you want to make it..";
+mes "Then these are the items I need.";
+next;
+mes "2 Valkyrie Shield";
+mes "1 Fire Dragon Scale";
+mes "4 Ripple";
+mes "1 Buckler[1]";
+mes "500 Treasure Box";
+mes "I also need 300,000,000 Zeny.";
+next;
+if(bulma >= 1 || countitem(2115) < 2 || countitem(7451) < 1 || countitem(7090) < 4 || countitem(2104) < 1 || countitem(7444) < 500 || Zeny < 300000000 ) goto K_ulangot;
+if(bulma >= 1 || countitem(2115) >= 2 || countitem(7451) >= 1 || countitem(7090) >= 4 || countitem(2104) >= 1 || countitem(7444) >= 500 || Zeny > 299999999 ) goto K_umpleto;
+close;
+
+M_ofo:
+
+mes "[ Jhep ]";
+mes "Okay, talk to me later.";
+close;
+K_ulangot:
+
+mes "[ Jhep ]";
+mes "You don't have the items!";
+close;
+
+K_umpleto:
+if (((Weight*100)/MaxWeight) > 75){ mes "You are over 75% overweight. Please free up enough space from your inventory before transacting to me again."; end;}
+mes "[ Jhep ]";
+mes "Wow, thanks!";
+delitem 2115,2;
+delitem 7451,1;
+delitem 7090,4;
+delitem 2104,1;
+delitem 7444,500;
+getitem 50028,1;
+set Zeny , Zeny - 300000000;
+next;
+mes "[ Jhep ]";
+mes "Nicely done isn't? Enjoy the shield";
+mes "So now, continue to search for my friends.";
+mes "And when you gain the Odin Valkyrie Set speak to Bryan";
+mes "If you have no clue about their location, my brothers and cousins are scattered around Rune-Midgard and Bryan is in Odin Valkyrie";
+announce "Wow! "+strcharinfo(0)+" has just acquired the mystical Odin Valkyrie Shield.",8;
+set jhep_jhe,1;
+close;
+
+L_bulmatapos:
+mes "[ Jhep ]";
+mes "Complete the Odin Valkyrie Quest and speak to Bryan";
+close;
+L_bulmadone:
+mes "[ Jhep ]";
+mes "Dude, you can only do this quest once!";
+close;
+}
+
+lighthalzen.gat,189,297,5	script	Frame	904,{
+
+if(bry_bry >=1) goto L_chichix;
+if(fra_fra >=1) goto L_chichi;
+if(ron_ron >= 1) goto tsitsi;
+if(ron_ron < 1)
+{
+mes "[ Frame ]";
+mes "I miss Donna";
+mes "I wish I could see her again";
+close;
+}
+tsitsi:
+mes "[ Frame ]";
+mes "You have spoken to my great Uncle Break the Seal?";
+mes "I am Frame, the crafter of Odin Valkyrie Shoes";
+mes "Would you like me to craft you the shoes?";
+next;
+menu "Sure",-,"Maybe Later",L_basho;
+next;
+
+
+
+mes "[ Frame ]";
+mes "The shoe is quite brittle.";
+mes "So it needs some items to harness it.";
+mes "I require you to give me these items";
+next;
+mes "4 Billow";
+mes "1 Boots[1]";
+mes "500 Treasure Box";
+mes "I also need 300,000,000 Zeny.";
+next;
+if(countitem(7091) < 4 || countitem(7444) < 500 || countitem(2406) < 1 || Zeny < 300000000 ) goto M_wala;
+if(countitem(7091) >= 4 || countitem(7444) >= 500 || countitem(2406) >= 1 || Zeny > 299999999 ) goto M_eron;
+mes "[ Frame ]";
+mes "Hurry up! I have something to do.";
+close;
+L_basho:
+
+mes "[ Frame ]";
+mes "Talk to me when you want it already.";
+close;
+
+M_wala:
+
+mes "[ Frame ]";
+mes "You lack some few items.";
+close;
+
+M_eron:
+if (((Weight*100)/MaxWeight) > 75){ mes "You are over 75% overweight. Please free up enough space from your inventory before transacting to me again."; end;}
+mes "[ Frame ]";
+mes "Oh thank you!";
+delitem 7091,4;
+delitem 2406,1;
+delitem 7444,500;
+getitem 50029,1;
+set Zeny , Zeny - 300000000;
+set fra_fra,1;
+next;
+mes "[ Frame ]";
+mes "Good one boy! Enjoy the shoes";
+mes "And continue the holy Odin Valkyrie Quest";
+mes "And when you gain the Odin Valkyrie Set speak to Bryan";
+mes "If you have no clue about their location, my brothers and cousins are scattered around Rune-Midgard and Bryan is in Odin Valkyrie";
+announce "Wow! "+strcharinfo(0)+" has just acquired the mystical Odin Valkyrie Shoes.",8;
+close;
+
+L_chichi:
+mes "[ Frame ]";
+mes "Search my cousins and after that, find Bryan!";
+close;
+
+L_chichix:
+mes "[ Frame ]";
+mes "Nice to meet you again brave warrior. How is life treating you with your new godly equips?";
+close;
+}
+
+comodo.gat,172,229,5	script	JmKhov	731,{
+
+if(bry_bry >=1) goto L_puten;
+if(jmk_jmk >=1) goto L_buten;
+if(ron_ron >=1) goto M_buten;
+if(ron_ron < 1)
+{
+mes "[ JmKhov ]";
+mes "Hi?.";
+mes "Now fly, you noob!";
+close;
+}
+
+M_buten:
+mes "[ JmKhov ]";
+mes "So you know my uncle Break the Seal? Wow that's great!";
+mes "I can make the Odin Valkyrie Manteau for you!";
+mes "You surely want it noob?";
+menu "Yeye",-,"Nevermind, thanks.",karpenter;
+next;
+mes "[ JmKhov ]";
+mes "Oh, holy! Give me these items right away!";
+next;
+mes "1 Matchstick";
+mes "4 Silver Ornament";
+mes "1 Manteau[1]";
+mes "500 Treasure Box";
+mes "I also need 800,000,000 Zeny.";
+next;
+mes "[ JmKhov ]";
+mes "Don't miss your chance, I will be waiting for you.";
+if (countitem(7035) < 1 || countitem(7077) < 4 || countitem(2506) < 1 || countitem(7444) < 500 || Zeny < 800000000) goto Kewlung;
+if (countitem(7035) >= 1 || countitem(7077) >= 4 || countitem(2506) >= 1 || countitem(7444) >= 500 || Zeny > 799999999) goto Kempleto;
+close;
+
+karpenter:
+next;
+mes "[ JmKhov ]";
+mes "Huhu *sob*! You've wasted my time! Get lost noob!";
+close;
+Kewlung:
+next;
+mes "[ JmKhov ]";
+mes "Incomplete items, noob!";
+close;
+
+Kempleto:
+next;
+if (((Weight*100)/MaxWeight) > 75){ mes "You are over 75% overweight. Please free up enough space from your inventory before transacting to me again."; end;}
+mes "[ JmKhov ]";
+mes "I see, you're a trustworthy one.";
+delitem 7444,500;
+delitem 2506,1;
+delitem 7077,4;
+delitem 7035,1;
+getitem 50032,1;
+set Zeny , Zeny - 800000000;
+set jmk_jmk,1;
+next;
+mes "[ JmKhov ]";  
+mes "Rawr! Take this robe and continue the Odin Valkyrie Quest,";
+mes "And when you gain the Odin Valkyrie Set speak to Bryan.";
+mes "If you have no clue about their location, my brothers and cousins are scattered around Rune-Midgard and Bryan is in Odin Valkyrie";
+announce "Wow! "+strcharinfo(0)+" has just acquired the mystical Odin Valkyrie Manteau.",8;
+close;
+
+L_buten:
+mes "[ JmKhov ]";
+mes "Finish my Uncle's quest and speak to Bryan at the Odin Valkyrie";
+close;
+L_puten:
+mes "[ JmKhov ]";
+mes "Wow, you're one of the Mega-Warrior! How is life treating you my friend?";
+close;
+}
+
+valkyrie.gat,49,49,5	script	Bryan	733,{
+mes "[ Bryan ]";
+mes "Hello there child, I am Bryan.";
+next;
+if(bry_bry >= 1) goto L_kalbo;
+if(countitem(50032) < 1 || countitem(50029) < 1 || countitem(50030) < 1 || countitem(50028) < 1) goto Bryan;
+mes "[ Bryan ]";
+mes "Good you have the Odin Valkyrie Set if you must know I am the crafter of the Lost Odin Helm of Valkyrie.";
+next;
+if(jmk_jmk >= 1) goto Bryanquest;
+if(jmk_jmk < 1) goto Bryan;
+Bryanquest:
+mes "[ Bryan ]";
+mes "I see, You really have spoken to my brothers.";
+mes "Very well then!";
+next;
+mes "[ Bryan ]";
+mes "By the way I am Bryan of the Odin Valkyries and you already know what I make.";
+mes "Do you desire to have the Odin Helm of Valkyrie?";
+menu "Yes",-,"No",L_nono;
+next;
+mes "[ Bryan ]";
+mes "The Great Odin Helm of Valkyrie named after Odin's trustee";
+mes "Steed, is the most powerful shoe in the land";
+mes "Gather these items so I may craft it";
+next;
+mes "900 Handcuffs";
+mes "5 Emblem of Sun God";
+mes "2 Matchstick";
+mes "2000 Gold";
+mes "I also need 800,000,000 Zeny.";
+next;
+mes "[ Bryan ]";
+mes "I will be waiting for you great one.";
+if(countitem(7345) < 900 || countitem(7086) < 5 || countitem(7035) < 2 || countitem(969) < 2000 || Zeny < 800000000 ) goto kikiki;
+if(countitem(7345) >= 900 || countitem(7086) >= 5 || countitem(7035) >= 2 || countitem(969) >= 2000 || Zeny > 799999999 ) goto killhim;
+close;
+L_nono:
+
+mes "[ Bryan ]";
+mes "Go away! If you don't want it. You're wasting my time already.";
+mes "Just speak to me if you're ready.";
+close;
+
+
+kikiki:
+next;
+mes "[ Bryan ]";
+mes "You lack of items, complete it!";
+close;
+killhim:
+next;
+if (((Weight*100)/MaxWeight) > 75){ mes "You are over 75% overweight. Please free up enough space from your inventory before transacting to me again."; end;}
+mes "[ Bryan ]";
+mes "Very well done child.";
+mes "You are very good!";
+delitem 7345,900;
+delitem 7086,5;
+delitem 969,2000;
+delitem 7035,2;
+getitem 50031,1;
+getitem 2410,1;
+set Zeny , Zeny - 800000000;
+set bry_bry,1;
+next;
+mes "[ Bryan ]";
+mes "As for my excellency, take care of that Odin Helm of Valkyrie";
+mes "You are now a Mega-Warrior of Temptation Ragnarok Online";
+mes "Go wild and free, you noble man";
+announce "Raise the Roof! "+strcharinfo(0)+" has just become the Mega-Warrior and gained Odin Helm of the Valkyrie. As a Hidden bonus reward an item has been given also!.",8;
+close;
+
+L_kalbo:
+mes "[ Bryan ]";
+mes "You have already gained Odin Helm of Valkyrie";
+mes "How dare you speak to me again!? Now, I order you to go back to Prontera!";
+next;
+percentheal -100,0;
+warp "prontera.gat",0,0;
+close;
+Bryan:
+mes "[ Bryan ]";
+mes "Oh my bad, I see you are just another newbie.";
+mes "Go fly away";
+close;
+}

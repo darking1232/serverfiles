@@ -1,0 +1,99 @@
+//prontera,156,176,4	script	Limited HG Quest	109,{
+
+prontera,156,176,4	script	Limited HG Quest	105,{
+	mes "^4000C0[Limited Edition Quest Shop]^000000";
+	mes "Hi there I can make some very limited item/s for you.";
+	next;
+	mes "^4000C0[Limited Edition Quest Shop]^000000";
+	mes "Note:This item/s are highly rare and may cost alot of your resources";
+	next;
+	mes "^4000C0[Limited Edition Quest Shop]^000000";
+	mes "My service will only be available until June 12, 2020 @ 11:59PM(Server time)";
+	next;
+	menu "Create",Q1,"Cancel",Q3;
+Q1:
+	mes "^4000C0[Limited Edition Quest Shop]^000000";
+	mes "What hat do you want me to make?";
+	next;
+	menu "Pilipinas Joker Jester",Q1_19;
+Q1_19:
+	mes "^4000C0[Limited Edition Quest Shop]^000000";
+	mes "I need the following Items.";
+	mes "^FF0000 122 ^000000 Zeny";
+	mes "^FF0000 122x ^000000 Feather [ITEM ID 949]";
+	mes "^FF0000 122x ^000000 Feather of Birds [ITEM ID 916]";
+	mes "^FF0000 122x ^000000 Fluff [ITEM ID 914]";
+	mes "^FF0000 122x ^000000 Fabric [ITEM ID 1059]";
+	mes "^FF0000 1x ^000000 Cap[1] [ITEM ID 2227]";
+	mes "";
+	next;
+	if(countitem(949) < 122 || countitem(916) < 122 || countitem(914) < 122 || countitem(1059) < 122 || countitem(2227) < 1 || Zeny < 122) goto Q3;
+	delitem 949,122;
+	delitem 916,122;
+	delitem 914,122;
+	delitem 1059,122;
+	delitem 2227,1;
+	set Zeny , Zeny - 122;
+	mes "^4000C0[Limited Edition Quest Shop]^000000";
+	mes "Wow!! Well done! Finally you have gathered all items needed! We will make the Pilipinas Joker Jester for you right away. Please Wait a Moment.";
+   	next;
+	mes "^4000C0[Limited Edition Quest Shop]^000000";
+	mes "Tah Dah! ^FF0000Pilipinas Joker Jester^000000...! Please Take it!";
+	getitem 3693,1;//Items: Baseball Cap
+	announce strcharinfo(0)+" has created 1x "+getitemname(3693)+" as a symbol Day of Freedom!",0,0xE06666;
+	next;
+	mes "^4000C0[Limited Edition Quest Shop]^000000";
+	mes "I liked that, I look forward to making more. Thank you.";
+	close;
+
+Q1_20:
+	mes "[Temp Quest Shop]";
+	mes "I need the following Items.";
+	mes "100,000,000 Zeny";
+	mes "1x Black Butterfly Wings [ITEM ID 50002]";
+	mes "1x White Butterfly Wings [ITEM ID 50009]";
+	mes "100x Orange DyeStuff [ITEM ID 980]";
+	mes "200x Red Gemstone [ITEM ID 716]";
+	mes "200x Yellow Gemstone [ITEM ID 715]";
+	mes "200x Gold [ITEM ID 969]";
+	mes "10x Garnet [ITEM ID 718]";
+	next;
+	if(countitem(50002) < 1 || countitem(50009) < 1 || countitem(980) < 100 || countitem(716) < 200 || countitem(715) < 200 || countitem(969) < 200 || countitem(718) < 10 || Zeny < 100000000) goto Q3;
+	delitem 50002,1;
+	delitem 50009,1;
+	delitem 980,100;
+	delitem 716,200;
+	delitem 715,200;
+	delitem 969,200;
+	delitem 718,10;
+	set Zeny , Zeny - 100000000;
+	mes "[Temp Quest Shop]";
+	mes "Wow!! Well done! Finally you have gathered all items needed! We will make the Icarus Wings! for you right away. Please Wait a Moment.";
+   	next;
+	mes "[Temp Quest Shop]";
+	mes "Tah Dah! ^FF0000Icarus Wings^000000...! Please Take it!";
+	getitem 50006,1;//Items: Baseball Cap
+	announce strcharinfo(0)+" has created 1x "+getitemname(50006)+"!",0,0xE06666;
+	next;
+	mes "[Temp Quest Shop]";
+	mes "I liked that, I look forward to making more. Thank you.";
+	close;
+
+
+Q3:
+	mes "^4000C0[Limited Edition Quest Shop]^000000";
+	mes "Stop by some other time with the right materials, so I can make the hats for you.";
+	close;
+
+//OnClock2359:
+OnClock2359:
+	disablenpc strnpcinfo(0);
+	end;
+
+OnInit:
+	delwaitingroom;
+	waitingroom "Limited Edition", 0;
+end;
+
+
+}

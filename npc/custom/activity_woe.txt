@@ -1,0 +1,133 @@
+//===== Hourly Points Script =========================================
+//===== By: ==========================================================
+//= GorthexTiger modified by Nibi
+//===== Current Version: =============================================
+//= 1.4.1
+//===== Compatible With: =============================================
+//= Any eAthena Version
+//===== Description: =================================================
+//= Get Points every successful hours of gameplay, you cannot get
+//= the points even if you miss a second or a minute. A player will
+//= get a very big bonus if they played 3 hours consecutively
+//= or without logging out of the game. If the player is vending
+//= the script will then stop.
+//===== Additional Comments: =========================================
+//= You can modify the script to your liking.
+//= The default points is Kafrapoints change it anyway if you like.
+//= 1.1 = Check Chatting too
+//= 1.2 = 5 Minute Idle Check & @at/@autotrade check.
+//= 1.3 = Corrected the current balance line on 12 Hours Consecutive
+//= 1.4 = Added command to check remaining time and updated idle check. (Skorm)
+//= 1.4.1 = Modified the msgs to display according to .timer. (Skorm)
+//====================================================================
+-	script	woeminpoints	-1,{
+
+OnPointGet:
+	if ( allstop == 1) end;
+	//Check for idle.
+	if ((!agitcheck() || !agitcheck2() || !agitcheck3()) && strcharinfo(3) == "prtg_cas01") end;
+	if (strcharinfo(3) != "prtg_cas01"){
+	dispbottom set( .@mes$, "The WOE adder points stopped because you were vending, chatting, idle or not in the WOE map! Please re-login and re-enter the map to restart the timer again.." );
+	set @consec_points_timer, 0;
+	set allstop, 1;
+	end;
+	}
+	if((gettime(DT_DAYOFWEEK)==SUNDAY) && (gettime(DT_HOUR)>=21 && gettime(DT_MINUTE)>=0 && gettime(DT_SECOND)>=0)) end;
+	dispbottom "You received "+.points+" WOEpoint(s) by staying ingame for 20 Minutes.";
+	#woepoints = #woepoints + .points;
+	dispbottom "Current WOE Points = "+#woepoints+" WOEpoint(s)";
+	set consecstart, 1;
+	set firststart, 1;
+	addtimer .timerconsec,"woeminpoints::OnConsecPoints";
+	end;
+
+OnConsecPoints:
+	if ( consecstart == 0) end;
+	//while(checkvending() >= 1 || checkchatting() == 1 || checkidle() >= .idle || strcharinfo(3) != "prtg_cas01") {
+	while(checkvending() >= 1 || checkchatting() == 1 || checkidle() >= .idle ) {
+		if( .@mes$ == "" ) {
+			dispbottom set( .@mes$, "The WOE adder points stopped because you were vending, chatting, idle or not in the WOE map! Please re-login and re-enter the map to restart the timer again." );
+			set @consec_points_timer, 0;
+			set allstop, 1;
+			end;
+			//set noulitwoe,0;
+		}
+		sleep2 .delay;
+	}
+		if((gettime(DT_DAYOFWEEK)==SUNDAY) && (gettime(DT_HOUR)>=21 && gettime(DT_MINUTE)>=0 && gettime(DT_SECOND)>=0)) end;
+		set @consec_points_timer, 0;
+		#woepoints = #woepoints + .cpoints;
+		dispbottom "You receive a bonus "+.cpoints+" WOEpoint(s) by playing consecutively!!!";
+		dispbottom "Current WOE Points = "+#woepoints+" WOEpoint(s)";
+		addtimer .timerconsec,"woeminpoints::OnConsecPoints";
+		@consec_points_timer = gettimetick(2) + ( .timerconsec / 1000 );
+		end;
+	
+OnPCLoadMapEvent:
+	if ((!agitcheck() || !agitcheck2() || !agitcheck3()) && strcharinfo(3) == "prtg_cas01") end;
+	if ( strcharinfo(3) == "prtg_cas01" && noulitwoe == 0) {
+	addtimer .timer,"woeminpoints::OnPointGet";
+	@hourly_points_timer = gettimetick(2) + ( .timer / 1000 );
+	set noulitwoe,1;
+	dispbottom "WOE Points reward has started. Determine Time left before obtaining WOE Points by @woetime";
+	dispbottom "Make sure that you are in the WOE map before the timer ends or else you will not receive the WOE Points.";
+while( firststart == 0) {
+	sleep2 .delay;
+		//if (strcharinfo(3) != "prtg_cas01"){
+		//	dispbottom set( .@mes$, "The WOE adder points stopped because you were vending, chatting, idle or not in the WOE map! Please re-login and re-enter the map to restart the timer again.." );
+		//	set @consec_points_timer, 0;
+		//	set allstop, 1;
+		//	end;
+		//
+		//}
+	while(checkvending() >= 1 || checkchatting() == 1 || checkidle() >= .idle ) {
+		if( .@mes$ == "" ) {
+			dispbottom set( .@mes$, "The WOE adder points stopped because you were vending, chatting, idle or not in the WOE map! Please re-login and re-enter the map to restart the timer again..." );
+			set @hourly_points_timer, 0;
+			set allstop, 1;
+			end;
+			//set noulitwoe,0;
+		}
+
+		sleep2 .delay;
+	}
+	
+	}
+	end;
+	}
+	end;
+
+
+OnPCLogoutEvent:
+	set noulitwoe,0;
+	set consecstart, 0;
+	set firststart, 0;
+	set allstop, 0;
+	end;
+
+	
+OnCmdwoecheck:
+	if (strcharinfo(3) != "prtg_cas01") { 
+	dispbottom "You should be in WOE map to make this work."; 
+	end;
+	}
+	if (consecstart == 1 ){
+	message strcharinfo(0),@consec_points_timer ? Time2Str( @consec_points_timer )+" remaining before you get your consecutive WOE Point Reward(s).":"Something went wrong or you're considered idle at the moment, try relogging!";
+	dispbottom "Make sure that you are in the WOE map before the timer ends or else you will not receive the WOE Points.";
+	end;
+	}
+	message strcharinfo(0),@hourly_points_timer ? Time2Str( @hourly_points_timer )+" remaining before you get your WOE Point Reward(s).":"Something went wrong or you're considered idle at the moment, try relogging!";
+	dispbottom "Make sure that you are in the WOE map before the timer ends or else you will not receive the WOE Points.";
+	end;
+
+OnInit:
+	bindatcmd "woetime","woeminpoints::OnCmdwoecheck"; //@ctr to view time till next point.
+	.timer   = 30000*60; //Timer in milliseconds. ( Default: 1000*60*60 [ = 1 Hour ] ) 20000*60=20minutes // 30000 per 30 sec
+	.timerconsec   = 120000; //Timer in milliseconds. ( Default: 1000*60*60 [ = 1 Hour ] ) 20000*60=20minutes // 120000 2 minutes
+	.cpoints = 1;         //Points gained for consecutive time online. ( Default: 10 )
+	.points  = 15;          //Normal points gained. ( Default: 1 )
+	.delay   = 45000;       //Delay for idle re-check check. ( Default: 1000 [ = 1 Second ] )
+	.idle    = 45;       //Player is idle after not moving for this many seconds. ( Default: 60*5 [ = 5 Minutes ] )
+}
+
+prtg_cas01	mapflag	loadevent

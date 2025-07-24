@@ -1,0 +1,140 @@
+-	script	ReviseRoGuide	-1,{
+
+OnInit:
+bindatcmd("guide",strnpcinfo(0)+"::OnGuideReviseRO");
+end;
+
+OnPCLoginEvent:
+	if ( (strcharinfo(3) != "prontera") ) end;
+	goto OnGuideReviseRO;
+	end;
+
+OnGuideReviseRO:
+if(!getmapflag( strcharinfo(3),mf_town ) ){
+mes "^4000C0[ReviseRO Helper]^000000";
+mes "You should be in Prontera to use my function.";
+end;
+}
+mes "^4000C0[ReviseRO Helper]^000000";
+mes "I am here incase you need me.";
+mes "Type ^FF0000@guide^000000 incase you need me next time.";
+mes "Where do you want to go?";
+switch( select("Close This Guide","Create/revert Custom item","Costume Appearance"
+,"Broadcaster NPC","Guild Storage/Logs","Break the Seal Quest","Instant +9 Item Safe Refine","Advance Stylist"
+,"Vote and Activity Shops","Emp Break Tester","Gold Room","Auto Event Shop"
+,"Lottery","Black Jack Dealer","Donation NPC","VIP Area","Platinum Skill NPC","Universal Rental NPC","GM Reward Giver"
+,"Castle Drop Exchanger","Market/Mall","Token Quest Area","Card Remover NPC","Sex Changer","GPACK Guide")){
+
+case 1:
+dispbottom "Type @guide if you need my help.";
+close;
+break;
+
+case 2:
+warp "prontera",166,230;
+break;
+
+case 3:
+warp "prontera",169,227;
+break;
+
+case 4:
+warp "prontera",181,215;
+break;
+
+case 5:
+warp "prontera",187,208;
+break;
+
+case 6:
+warp "prontera",163,205;
+break;
+
+case 7:
+warp "prontera",185,177;
+break;
+
+case 8:
+warp "prontera",169,180;
+break;
+
+case 9:
+warp "prt_in",128,42;
+break;
+
+
+case 10:
+warp "prontera",161,159;
+break;
+
+case 11:
+warp "prontera",161,152;
+break;
+
+case 12:
+warp "prontera",147,147;
+break;
+
+case 13:
+warp "prontera",147,158;
+break;
+
+case 14:
+warp "prontera",147,161;
+break;
+
+case 15:
+warp "prontera",141,180;
+break;
+
+case 16:
+warp "prt_in",50,105;
+break;
+
+case 17:
+warp "prontera",129,200;
+break;
+
+case 18:
+warp "prontera",125,201;
+break;
+
+case 19:
+warp "prontera",139,223;
+break;
+
+case 20:
+warp "prontera",144,228;
+break;
+
+case 21:
+warp "turbo_room",99,111;
+break;
+
+case 22:
+warp "yuno_in01",110,164;
+break;
+
+case 23:
+warp "prt_in",29,73;
+break;
+
+case 24:
+warp "prt_in",234,107;
+break;
+
+
+case 25:
+doevent "ReviseRogpack::OnGpackReviseRO";
+next;
+end;
+
+
+default:
+end;
+
+}
+
+}
+
+

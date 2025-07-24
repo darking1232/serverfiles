@@ -1,0 +1,20 @@
+-	script	News	-1,{
+OnInit:
+set .Time,20;		// Announce every x Minute.
+
+setarray .News$[0],	// Random Message to be Announced
+		"Welcome to Revise Ragnarok Online Where Life comes after Death.",
+		"Do not forget to like and share our Facebook Page.Link can be obtained from our website www.revise-ro.com",
+		"Feel free to write a review at Ratemyserver. Link can be obtained from our website www.revise-ro.com",
+		"Keep updated by visiting our Forum and Facebook page.",
+		"Do not forget to vote and gain points at the same time.",
+		"Invite your friends and have fun!.",
+		"Guild Package Application is now available. Check out our fb page or forum",
+		"Please report any bugs and concerns to Game Master's/Facebook Page/ Forum.";
+		
+while( 1 ){
+	announce .News$[ rand( getarraysize( .News$ ) ) ],0;
+	sleep ( .Time * 60000 );
+	}
+end;
+}

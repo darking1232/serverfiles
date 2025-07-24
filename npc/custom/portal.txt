@@ -1,0 +1,46 @@
+prontera,165,168,0	warp	vfp_activity_entrance	1,1,prt_in,128,42
+
+prt_in,128,45,0	warp	vfp_activity_exit	1,1,prontera,163,168
+
+
+prontera,165,170,4	script	Vote and Activity Attendant	114,{
+	mes "Please go ahead and step into the portal";
+	close;
+OnInit:
+waitingroom "All Points Shop",0;
+end;
+}
+
+prontera,132,186,1	script	VIP Room Attendant	114,{
+	mes "Please go ahead and step into the portal";
+	close;
+
+OnInit:
+waitingroom "VIP Shop",0;
+end;
+}
+
+prontera,139,197,5	script	Mall Warper	114,{
+
+if(select("Yes Please:No Thank you") == 1) {
+
+	warp "turbo_room",99,111;
+	end;
+}
+
+OnInit:
+waitingroom "Mall & Quest Warper",0;
+end;
+}
+
+-	script	go_mall	-1,{
+OnInit:
+	bindatcmd "mall",strnpcinfo(3)+"::Ongomallcom";
+	bindatcmd "market",strnpcinfo(3)+"::Ongomallcom";
+	bindatcmd "turbo_room",strnpcinfo(3)+"::Ongomallcom";
+	end;
+Ongomallcom:
+	warp "turbo_room",99,111;
+	end;
+}
+

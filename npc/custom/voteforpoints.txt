@@ -1,0 +1,15 @@
+-	script	VotePointConvert	-1,{
+OnPCLoginEvent:
+    query_sql "SELECT `value` FROM `acc_reg_num` WHERE `key` = '#votepoints' AND `account_id`="+getcharid(3)+" LIMIT 1", .@points;
+    if (!.@points) end;
+    //query_sql "UPDATE `acc_reg_num` SET `value`=(value-"+.@points+") WHERE `account_id`="+getcharid(3)+" AND `key` = '#votepoints'";
+    //set #votepoints, #votepoints+.@points;
+    dispbottom "Vote Points Total: "+#votepoints;
+    end;
+}
+prt_in,135,35,3	pointshop	Vote Manager	666,#votepoints,14545:5,12210:10,7776:40,50026:50,5416:75,5372:75,5474:100,5670:100,18651:100,5511:100,5269:125,5539:125,5068:125,5421:75,5206:75,5273:125,5382:125,5129:150,5519:150,5380:175,5359:250,5523:250,5367:250,5480:200,2767:200,2769:200,2768:200,2771:200,2766:200,2770:200,5200:250,5262:300,5357:250
+
+
+
+
+

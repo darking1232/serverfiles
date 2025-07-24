@@ -1,0 +1,258 @@
+//===== Thaddeus Scripts ================================== 
+//= Simple Cool Anti-Bot
+//===== By: ================================================== 
+//= Thaddeus
+//===== Current Version: ===================================== 
+//= 2.0
+//===== Compatible With: ===================================== 
+//= Hercules, rAthena, 3ceam, eAthena
+//===== Description: =========================================
+// Improvise Simple Anti-Bot! from method of Brian.
+//===== Comments: ============================================
+//= Change the % chance of triggering, change jail time.
+//===== Additional Comments: =================================
+//= 1.00 Initial Release
+//= 1.01 Cleaned up and removed the use of goto (Stolao)
+//===== Contact Info: =========================================
+//= http://hercules.ws/board/user/457-thaddeus/
+//============================================================
+//===== Credits to: =========================================
+//= Brian, Stolao
+//============================================================
+//edit timer, maps, mapflag
+
+-	script	anti-bot2	-1,{
+
+OnPCLoginEvent:
+	set checkbot,0;
+	if(botter >= 1) {
+		doevent "anti-bot::Oncheckb";
+		set takbo, 0;
+		end;
+	}
+	for (.@a = 0; .@a < getarraysize(.arrayt_maps1$); set .@a,.@a+1) {
+	if( (takbo >= 1) && ( strcharinfo(3) == .arrayt_maps1$[.@a] ) ) {
+		doevent "anti-bot::Oncheckb";
+		end;
+	}
+	}
+
+}
+
+
+-	script	anti-bot	-1,{
+OnInit:
+	setarray .@t_maps1$[0],"abbey01" ,"ordeal_3-2" ,"abbey02" ,"abbey03" ,"alde_dun03" ,"ama_dun03" ,"ama_fild01" ,"anthell01" ,"anthell02" ,"ayo_dun02" ,"cmd_fild01" ,"cmd_fild02" ,"cmd_fild03" ,"cmd_fild04" ,"gef_dun01" ,"gef_dun02" ,"gef_fild03" ,"gef_fild06" ,"gl_cas02" ,"gl_chyard" ,"gl_knt02" ,"gl_prison" ,"gl_prison1" ,"gl_sew01" ,"gl_sew02" ,"gl_step" ,"hu_fild04" ,"hu_fild07" ,"lou_dun02" ,"mjo_dun02" ,"mjo_dun03" ,"mjolnir_02" ,"mjolnir_03" ,"mjolnir_11" ,"moc_fild16" ,"moc_fild20" ,"moc_pryd02" ,"moc_pryd03" ,"moc_pryd04" ,"moc_pryd05" ,"moc_pryd06" ,"mosk_dun01" ,"mosk_dun02" ,"nif_fild02" ,"niflheim" ,"orcsdun01" ,"orcsdun02" ,"pay_dun00" ,"pay_dun02" ,"pay_dun03" ,"pay_dun04" ,"pay_fild11" ,"prt_fild02" ,"prt_fild10" ,"prt_maze03" ,"prt_sewb1" ,"prt_sewb2" ,"prt_sewb3" ,"um_fild03" ,"ve_fild02" ,"yuno_fild05" ,"tha_t12" ,"thor_v02" ,"tha_t03" ,"tha_t04" ,"abyss_03" ,"gef_dun03" ,"beach_dun" ,"iz_dun04" ,"ein_dun01";
+	setarray .arrayt_maps1$[0],"abbey01" ,"ordeal_3-2" ,"abbey02" ,"abbey03" ,"alde_dun03" ,"ama_dun03" ,"ama_fild01" ,"anthell01" ,"anthell02" ,"ayo_dun02" ,"cmd_fild01" ,"cmd_fild02" ,"cmd_fild03" ,"cmd_fild04" ,"gef_dun01" ,"gef_dun02" ,"gef_fild03" ,"gef_fild06" ,"gl_cas02" ,"gl_chyard" ,"gl_knt02" ,"gl_prison" ,"gl_prison1" ,"gl_sew01" ,"gl_sew02" ,"gl_step" ,"hu_fild04" ,"hu_fild07" ,"lou_dun02" ,"mjo_dun02" ,"mjo_dun03" ,"mjolnir_02" ,"mjolnir_03" ,"mjolnir_11" ,"moc_fild16" ,"moc_fild20" ,"moc_pryd02" ,"moc_pryd03" ,"moc_pryd04" ,"moc_pryd05" ,"moc_pryd06" ,"mosk_dun01" ,"mosk_dun02" ,"nif_fild02" ,"niflheim" ,"orcsdun01" ,"orcsdun02" ,"pay_dun00" ,"pay_dun02" ,"pay_dun03" ,"pay_dun04" ,"pay_fild11" ,"prt_fild02" ,"prt_fild10" ,"prt_maze03" ,"prt_sewb1" ,"prt_sewb2" ,"prt_sewb3" ,"um_fild03" ,"ve_fild02" ,"yuno_fild05" ,"tha_t12" ,"thor_v02" ,"tha_t03" ,"tha_t04" ,"abyss_03" ,"gef_dun03" ,"beach_dun" ,"iz_dun04" ,"ein_dun01";
+	end;
+
+OnPCLoadMapEvent:
+	query_sql("SELECT last_unique_id FROM `login` WHERE account_id = "+getcharid(3)+"", .@UniqueIdbot$);
+	if (.@UniqueIdbot$ == "2843194742") { end;}
+	if (norepeat == 1 ){
+	end;
+	}
+	set norepeat,1;
+	deltimer strnpcinfo(0)+"::OnCheat";
+	deltimer strnpcinfo(0)+"::OnTrig";
+	for (.@a = 0; .@a < getarraysize(.arrayt_maps1$); set .@a,.@a+1) {
+	if ( strcharinfo(3) == .arrayt_maps1$[.@a]) {
+	dispbottom "[^0055FF: Bot Checker Enabled for This Map :^000000]";
+	dispbottom "Do not go AFK on this map. Answer Anti-bot Immediately if ask";
+	set takbo,1;
+	set checkbot,0;
+	addtimer 900000, strnpcinfo(3)+"::OnTrig"; //900000= 15 minutes.milisecond
+	end;
+	}
+
+}
+
+OnPCLogoutEvent:
+	deltimer strnpcinfo(0)+"::OnCheat";
+	deltimer strnpcinfo(0)+"::OnTrig";
+	set norepeat,0;
+	end;
+
+
+OnCheat:
+	query_sql "SELECT `account_id`,`name` FROM `char` WHERE `name` = '"+(strcharinfo(0))+"'", .@account_id,.@name$;
+	getmapxy( .@mapname$, .@mapx, .@mapy, BL_PC );
+	dispbottom "You took too long to answer the Bot Checker. Therefore you are Jailed.";
+	atcommand "@jailfor 24h "+strcharinfo(0)+"";
+	announce "[Anti-BOT]: The user [" +strcharinfo(0) +"] Has Been Jailed For 24 Hours.",0,0xe80f0f;
+	query_sql "INSERT INTO `a_jail_log` (`account_id`,`name`,`time`,`required_input`,`user_input`,`player_location`,`x`,`y`) VALUES ("+.@account_id+",'"+.@name$+"',NOW(),'"+.@String$+"','"+.@Input$+"','"+.@mapname$+"',"+.@mapx+","+.@mapy+")";
+	set takbo,0;
+	set botter,0;
+	set checkbot,1;
+	set norepeat,0;
+	atcommand "@option 0";
+	setpcblock PCBLOCK_IMMUNE|PCBLOCK_MOVE, false, getcharid(3);
+	sc_end SC_FREEZE;
+	sc_end EF_STONECURSE;
+	sc_end Eff_Stone; 
+	sc_end SC_FREEZE;
+	atcommand "@die";
+	end;
+
+OnTrig:
+	if( rand(100) < 15 ) {
+	doevent "anti-bot::OnPCLoadMapEvent";
+	set norepeat,0;//added july 8
+	end;
+	} // Default Setting: 60% Chance to Ignore the Anti-Bot
+	for (.@a = 0; .@a < getarraysize(.arrayt_maps1$); set .@a,.@a+1) {
+	if ( strcharinfo(3) == .arrayt_maps1$[.@a]) { 
+	Oncheckb:
+	function GetString;
+	//if (getgroupid() >= 50) { end;} /* Uncomment if you want to Ignore this by GM */
+	if(checkbot >= 1) { end; }
+
+	setpcblock PCBLOCK_IMMUNE|PCBLOCK_MOVE, true, getcharid(3);
+	set botter,1;
+	atcommand "@option 2";
+	atcommand "@alive";
+	sleep2 3000;
+	addtimer 180000, strnpcinfo(0)+"::OnCheat";
+	query_sql "SELECT `account_id`,`name` FROM `char` WHERE `name` = '"+(strcharinfo(0))+"'", .@account_id,.@name$;
+	getmapxy( .@mapname$, .@mapx, .@mapy, BL_PC );
+	for(set botter,botter; botter < 4; set botter,botter++){
+		set .@String$,GetString( 15,rand(5,10) );
+		mes "You Have 3 Minutes and 3 Chances to Type the Red Text Correctly";
+		mes "Attempt Number: " +botter;
+		mes "If you failed- You will be jailed";
+		mes "Input the ^FF0000RED COLOUR^000000 part";
+		mes "^0000FF"+GetString( 15,rand(5,10) )+"^FF0000"+.@String$+"^0000FF"+GetString( 15,rand(3,10) )+"^000000";
+		input .@Input$;
+		if( .@Input$ != .@String$ ){
+			if (botter >= 3) {
+				sleep2 1000;
+				atcommand "@jailfor 24h "+strcharinfo(0)+"";
+				announce "[Anti-BOT]: The user [" +strcharinfo(0) +"] Has Been Jailed For 24 Hours.",0,0xe80f0f;
+				query_sql "INSERT INTO `a_jail_log` (`account_id`,`name`,`time`,`required_input`,`user_input`,`player_location`,`x`,`y`) VALUES ("+.@account_id+",'"+.@name$+"',NOW(),'"+.@String$+"','"+.@Input$+"','"+.@mapname$+"',"+.@mapx+","+.@mapy+")";
+				set takbo,0;
+				set botter,0;
+				set checkbot,1;
+				set norepeat,0;
+				atcommand "@option 0";
+				setpcblock PCBLOCK_IMMUNE|PCBLOCK_MOVE, false, getcharid(3);
+				sc_end SC_FREEZE;
+				sc_end EF_STONECURSE;
+				sc_end Eff_Stone; 
+				sc_end SC_FREEZE;
+				atcommand "@die";
+				end;
+			
+			}
+			mes "Wrong..";
+			set botter, botter + 1;
+			next;
+		} else {
+			break;
+		}
+	}
+	atcommand "@unjail "+strcharinfo(0)+"";
+	set takbo,0;
+	set botter,0;
+	set checkbot,1;
+	set norepeat,0;
+	atcommand "@option 0";
+	setpcblock PCBLOCK_IMMUNE|PCBLOCK_MOVE, false, getcharid(3);
+	sc_end SC_FREEZE;
+	sc_end EF_STONECURSE;
+	sc_end Eff_Stone; 
+	percentheal 100,100;
+	sc_end SC_FREEZE;
+	deltimer strnpcinfo(0)+"::OnCheat";
+	doevent "anti-bot::OnPCLoadMapEvent";
+	end;
+
+	function	GetString	{
+		if( getarg(0) & 1 ) setarray .@List$[ getarraysize( .@List$ ) ],"1","2","3","4","5","6","7","8","9";
+		if( getarg(0) & 2 ) setarray .@List$[ getarraysize( .@List$ ) ],"A","B","C","D","E","F","G","H","J","K","L","M","N","P","Q","R","S","T","U","X","Y","Z";
+		if( getarg(0) & 4 ) setarray .@List$[ getarraysize( .@List$ ) ],"a","b","c","d","e","f","g","h","i","j","m","p","q","r","s","t","u","x","y","z";
+		//if( getarg(0) & 8 ) setarray .@List$[ getarraysize( .@List$ ) ],"!","@","#","$","%","^","&","*","(",")","-","=","/","+";
+
+	set .@Str$,"";
+		while( getstrlen( .@Str$ ) < getarg(1) )
+		set .@Str$,.@Str$ + .@List$[ rand( getarraysize( .@List$ ) ) ];
+		return .@Str$;
+
+	}
+
+	} else {
+		set norepeat,0;
+	}
+	}
+}
+
+sec_pri	mapflag	pvp	off
+ordeal_3-2	mapflag	loadevent
+abbey01	mapflag	loadevent
+abbey02	mapflag	loadevent
+abbey03	mapflag	loadevent
+alde_dun03	mapflag	loadevent
+ama_dun03	mapflag	loadevent
+ama_fild01	mapflag	loadevent
+anthell01	mapflag	loadevent
+anthell02	mapflag	loadevent
+ayo_dun02	mapflag	loadevent
+cmd_fild01	mapflag	loadevent
+cmd_fild02	mapflag	loadevent
+cmd_fild03	mapflag	loadevent
+cmd_fild04	mapflag	loadevent
+gef_dun01	mapflag	loadevent
+gef_dun02	mapflag	loadevent
+gef_fild03	mapflag	loadevent
+gef_fild06	mapflag	loadevent
+gl_cas02	mapflag	loadevent
+gl_chyard	mapflag	loadevent
+gl_knt02	mapflag	loadevent
+gl_prison	mapflag	loadevent
+gl_prison1	mapflag	loadevent
+gl_sew01	mapflag	loadevent
+gl_sew02	mapflag	loadevent
+gl_step	mapflag	loadevent
+hu_fild04	mapflag	loadevent
+hu_fild07	mapflag	loadevent
+lou_dun02	mapflag	loadevent
+mjo_dun02	mapflag	loadevent
+mjo_dun03	mapflag	loadevent
+mjolnir_02	mapflag	loadevent
+mjolnir_03	mapflag	loadevent
+mjolnir_11	mapflag	loadevent
+moc_fild16	mapflag	loadevent
+moc_fild20	mapflag	loadevent
+moc_pryd02	mapflag	loadevent
+moc_pryd03	mapflag	loadevent
+moc_pryd04	mapflag	loadevent
+moc_pryd05	mapflag	loadevent
+moc_pryd06	mapflag	loadevent
+mosk_dun01	mapflag	loadevent
+mosk_dun02	mapflag	loadevent
+nif_fild02	mapflag	loadevent
+niflheim	mapflag	loadevent
+orcsdun01	mapflag	loadevent
+orcsdun02	mapflag	loadevent
+pay_dun00	mapflag	loadevent
+pay_dun02	mapflag	loadevent
+pay_dun03	mapflag	loadevent
+pay_dun04	mapflag	loadevent
+pay_fild11	mapflag	loadevent
+prt_fild02	mapflag	loadevent
+prt_fild10	mapflag	loadevent
+prt_maze03	mapflag	loadevent
+prt_sewb1	mapflag	loadevent
+prt_sewb2	mapflag	loadevent
+prt_sewb3	mapflag	loadevent
+um_fild03	mapflag	loadevent
+ve_fild02	mapflag	loadevent
+yuno_fild05	mapflag	loadevent
+tha_t12	mapflag	loadevent
+thor_v02	mapflag	loadevent
+tha_t03	mapflag	loadevent
+tha_t04	mapflag	loadevent
+abyss_03	mapflag	loadevent
+gef_dun03	mapflag	loadevent
+beach_dun	mapflag	loadevent
+iz_dun04	mapflag	loadevent
+ein_dun01	mapflag	loadevent
