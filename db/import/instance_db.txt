@@ -1,0 +1,7 @@
+// Instance Database
+//
+// Structure of Database:
+// ID,Name,LimitTime,IdleTimeOut,EnterMap,EnterX,EnterY,Map2,Map3,...,Map255
+//
+// EnterMap is considered as Map1
+200,Emperium Test Breaker,3600,1,job3_arch01,26,28
